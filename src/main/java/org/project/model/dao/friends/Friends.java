@@ -1,5 +1,7 @@
-package org.project.model.dao;
+package org.project.model.dao.friends;
 
+
+import org.project.model.dao.users.Users;
 
 public class Friends {
     private Users friend;

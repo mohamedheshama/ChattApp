@@ -1,10 +1,11 @@
-package org.project.model.dao;
+package org.project.model.dao.users;
 
 import javafx.collections.ObservableList;
+import org.project.model.dao.friends.Friends;
 
 public interface UsersDAO {
 
-    Users login(String phone_number, String password);
+    Users login(String phone_number);
 
     boolean register(Users user);
 
@@ -17,6 +18,4 @@ public interface UsersDAO {
     boolean userExist(String phone_number);
 
     boolean updateStatus(Users user, UserStatus status);
-
-
 }

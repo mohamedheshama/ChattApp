@@ -1,7 +1,8 @@
-package org.project.model.dao;
+package org.project.model.dao.users;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.project.model.dao.friends.Friends;
 
 import java.sql.Blob;
 import java.sql.Date;
@@ -22,28 +23,6 @@ public class Users {
     private UserStatus status;
     private ObservableList<Friends> friends = FXCollections.observableArrayList();
     private ObservableList<Friends> request_notifications = FXCollections.observableArrayList();
-
-    public void login() {
-    }
-
-    public void chat() {
-    }
-
-    public void addFriend() {
-    }
-
-    public void createGroup() {
-    }
-
-    public void signOut() {
-    }
-
-
-    public void viewProfile() {
-    }
-
-    public void updateProfile() {
-    }
 
     public int getId() {
         return id;
@@ -149,5 +128,19 @@ public class Users {
 
     public void setRequest_notifications(ObservableList<Friends> request_notifications) {
         this.request_notifications = request_notifications;
+    }
+
+    @Override
+    public String toString() {
+        return "Users{" +
+                "id=" + id +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", gender=" + gender +
+                ", country='" + country + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                '}';
     }
 }

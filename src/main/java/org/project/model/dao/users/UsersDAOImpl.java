@@ -1,32 +1,35 @@
-package org.project.model.dao;
+package org.project.model.dao.users;
 
 import javafx.collections.ObservableList;
+import org.project.model.connection.ConnectionStrategy;
+import org.project.model.dao.friends.Friends;
+import org.project.model.dao.friends.RequestStatus;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 
-public class UsersDAOImpl implements UsersDAO {
+public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
+    ConnectionStrategy connectionStrategy;
     Connection connection;
+    Logger logger = Logger.getLogger(UsersDAOImpl.class.getName());
 
-    public UsersDAOImpl(Connection con) {
-        this.connection = con;
+    public UsersDAOImpl(ConnectionStrategy con) throws SQLException {
+        this.connectionStrategy = con;
+        connection = connectionStrategy.getConnection();
     }
 
     @Override
-    public Users login(String phone_number, String password) {
+    public Users login(String phoneNumber) {
         Users user;
 
-        try {
-
-            PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=? AND password=?");
-            ps.setString(1, phone_number);
-            ps.setString(2, password);
-            ResultSet rs = ps.executeQuery();
-
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
+             ps.setString(1, phoneNumber);
+             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 user = extractUserFromResultSet(rs);
                 getUserFriends(user);
@@ -34,9 +37,9 @@ public class UsersDAOImpl implements UsersDAO {
                 return user;
             }
 
-
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
         }
         return null;
     }
@@ -44,24 +47,24 @@ public class UsersDAOImpl implements UsersDAO {
     @Override
     public boolean register(Users user) {
         //Check first if name exist using userExistMethod then register
-
         try {
-            String SQL = "Insert into users (phone_number,name,email,password,gender,country,date_of_birth,bio,status) values (?,?,?,?,?,?,?,?,?)";
-            PreparedStatement prepared_statement = connection.prepareStatement(SQL);
-            prepared_statement.setString(1, user.getPhoneNumber());
-            prepared_statement.setString(2, user.getName());
-            prepared_statement.setString(3, user.getEmail());
-            prepared_statement.setString(4, user.getPassword());
-            prepared_statement.setString(5, String.valueOf(user.getGender()));
-            prepared_statement.setString(6, user.getCountry());
-            prepared_statement.setDate(7, user.getDateOfBirth());
-            prepared_statement.setString(8, user.getBio());
-            prepared_statement.setString(9, String.valueOf(user.getStatus()));
-            prepared_statement.executeUpdate();
+            String sql = "Insert into users (phone_number,name,email,password,gender,country,date_of_birth,bio,status) values (?,?,?,?,?,?,?,?,?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, user.getPhoneNumber());
+            preparedStatement.setString(2, user.getName());
+            preparedStatement.setString(3, user.getEmail());
+            preparedStatement.setString(4, user.getPassword());
+            preparedStatement.setString(5, String.valueOf(user.getGender()));
+            preparedStatement.setString(6, user.getCountry());
+            preparedStatement.setDate(7, user.getDateOfBirth());
+            preparedStatement.setString(8, user.getBio());
+            preparedStatement.setString(9, String.valueOf(user.getStatus()));
+            preparedStatement.executeUpdate();
             return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warning(e.getSQLState());
+            logger.warning(e.getMessage());
         }
 
         return false;
@@ -73,11 +76,8 @@ public class UsersDAOImpl implements UsersDAO {
         // make sure input is validated
 
         try {
-
-            PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE users.id=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-
-            //ps = connection.prepareStatement("select id from users where users.id=?");
-            ps.setInt(1, user.getId());
+            PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE users.phone_number=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ps.setString(1, user.getPhoneNumber());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 rs.updateString("phone_number", user.getPhoneNumber());
@@ -94,7 +94,8 @@ public class UsersDAOImpl implements UsersDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warning(e.getSQLState());
+            logger.warning(e.getMessage());
         }
 
 
@@ -115,7 +116,8 @@ public class UsersDAOImpl implements UsersDAO {
             }
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
         }
         return null;
     }
@@ -137,7 +139,8 @@ public class UsersDAOImpl implements UsersDAO {
             }
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
         }
         return null;
     }
@@ -169,16 +172,17 @@ public class UsersDAOImpl implements UsersDAO {
         return user;
     }
 
-    public boolean userExist(String phone_number) {
+    public boolean userExist(String phoneNumber) {
         try {
             PreparedStatement ps = connection.prepareStatement("select id,name from users where phone_number=?;");
-            ps.setString(1, phone_number);
+            ps.setString(1, phoneNumber);
             ResultSet rs = ps.executeQuery();
             if (rs.next())
                 return true;
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
         }
         return false;
 
@@ -192,19 +196,25 @@ public class UsersDAOImpl implements UsersDAO {
             PreparedStatement ps = connection.prepareStatement("select id,status from users where users.id=?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             ps.setInt(1, user.getId());
             ResultSet rs = ps.executeQuery();
-            //rs.updateString("status", String.valueOf(user.getStatus()));
             if (rs.next()) {
                 rs.updateString("status", String.valueOf(status));
                 rs.updateRow();
             }
-
-
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warning(e.getSQLState());
+            logger.warning(e.getMessage());
         }
 
 
         return false;
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+            Connection conn;
+            conn = connectionStrategy.getConnection();
+            return conn;
+
     }
 }
