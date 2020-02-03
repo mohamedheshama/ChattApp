@@ -26,10 +26,10 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     @Override
     public Users login(String phoneNumber) {
         Users user;
-
+        ResultSet rs = null;
         try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
-             ps.setString(1, phoneNumber);
-             ResultSet rs = ps.executeQuery();
+            ps.setString(1, phoneNumber);
+            rs = ps.executeQuery();
             if (rs.next()) {
                 user = extractUserFromResultSet(rs);
                 getUserFriends(user);
@@ -40,16 +40,23 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         } catch (SQLException ex) {
             logger.warning(ex.getSQLState());
             logger.warning(ex.getMessage());
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                logger.warning(e.getMessage());
+                e.printStackTrace();
+            }
         }
         return null;
     }
 
     @Override
     public boolean register(Users user) {
-        //Check first if name exist using userExistMethod then register
-        try {
-            String sql = "Insert into users (phone_number,name,email,password,gender,country,date_of_birth,bio,status) values (?,?,?,?,?,?,?,?,?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        //Check first if name exist using isUserExistMethod then register
+        String sql = "Insert into users (phone_number,name,email,password,gender,country,date_of_birth,bio,status)" +
+                " values (?,?,?,?,?,?,?,?,?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, user.getPhoneNumber());
             preparedStatement.setString(2, user.getName());
             preparedStatement.setString(3, user.getEmail());
@@ -61,10 +68,10 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             preparedStatement.setString(9, String.valueOf(user.getStatus()));
             preparedStatement.executeUpdate();
             return true;
-
         } catch (SQLException e) {
             logger.warning(e.getSQLState());
             logger.warning(e.getMessage());
+            e.printStackTrace();
         }
 
         return false;
@@ -74,11 +81,10 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public boolean updateUser(Users user) {
         // make sure no empty mandatory fields
         // make sure input is validated
-
-        try {
-            PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE users.phone_number=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        ResultSet rs = null;
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE users.phone_number=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
             ps.setString(1, user.getPhoneNumber());
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             if (rs.next()) {
                 rs.updateString("phone_number", user.getPhoneNumber());
                 rs.updateString("name", user.getName());
@@ -96,6 +102,13 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         } catch (SQLException e) {
             logger.warning(e.getSQLState());
             logger.warning(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
 
@@ -104,11 +117,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
     @Override
     public ObservableList<Friends> getUserFriends(Users user) {
-        try {
-            PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on f.friend_id=u.id where f.user_id=? AND f.friend_status=?;");
+        ResultSet rs = null;
+        try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on f.friend_id=u.id where f.user_id=? AND f.friend_status=?;");) {
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Accepted));
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             while (rs.next()) {
                 Friends friend = new Friends();
                 friend.setFriend(extractFriendFromResultSet(rs));
@@ -118,19 +131,24 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         } catch (SQLException ex) {
             logger.warning(ex.getSQLState());
             logger.warning(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
 
     @Override
     public ObservableList<Friends> getUserNotifications(Users user) {
-
-        try {
-
-            PreparedStatement ps = connection.prepareStatement("select u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on u.id=f.user_id where f.friend_id=? AND f.friend_status=? ;");
+        ResultSet rs = null;
+        try (PreparedStatement ps = connection.prepareStatement("select u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on u.id=f.user_id where f.friend_id=? AND f.friend_status=? ;");) {
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Pending));
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             while (rs.next()) {
                 Friends friend = new Friends();
 
@@ -141,6 +159,13 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         } catch (SQLException ex) {
             logger.warning(ex.getSQLState());
             logger.warning(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
@@ -172,7 +197,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         return user;
     }
 
-    public boolean userExist(String phoneNumber) {
+    public boolean isUserExist(String phoneNumber) {
         try {
             PreparedStatement ps = connection.prepareStatement("select id,name from users where phone_number=?;");
             ps.setString(1, phoneNumber);
@@ -191,11 +216,10 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
     @Override
     public boolean updateStatus(Users user, UserStatus status) {
-
-        try {
-            PreparedStatement ps = connection.prepareStatement("select id,status from users where users.id=?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        ResultSet rs = null;
+        try (PreparedStatement ps = connection.prepareStatement("select id,status from users where users.id=?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
             ps.setInt(1, user.getId());
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             if (rs.next()) {
                 rs.updateString("status", String.valueOf(status));
                 rs.updateRow();
@@ -204,6 +228,13 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         } catch (SQLException e) {
             logger.warning(e.getSQLState());
             logger.warning(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
 
