@@ -2,13 +2,13 @@ package org.project.model.dao.users;
 
 import javafx.collections.ObservableList;
 import org.project.model.connection.ConnectionStrategy;
-import org.project.model.dao.friends.Friends;
 import org.project.model.dao.friends.RequestStatus;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 
@@ -24,12 +24,12 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     }
 
     @Override
-    public Users login(String phoneNumber) {
+    public Users login(String phoneNumber,String password) {
         Users user;
         ResultSet rs = null;
         try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=? And password=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
             ps.setString(1, phoneNumber);
-            //ps.setString(2, password);
+            ps.setString(2, password);
             rs = ps.executeQuery();
             if (rs.next()) {
                 user = extractUserFromResultSet(rs);
@@ -118,15 +118,14 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     }
 
     @Override
-    public ObservableList<Friends> getUserFriends(Users user) {
+    public ArrayList<Users> getUserFriends(Users user) {
         ResultSet rs = null;
         try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on f.friend_id=u.id where f.user_id=? AND f.friend_status=?;");) {
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Accepted));
             rs = ps.executeQuery();
             while (rs.next()) {
-                Friends friend = new Friends();
-                friend.setFriend(extractFriendFromResultSet(rs));
+                Users friend = extractFriendFromResultSet(rs);
                 user.getFriends().add(friend);
             }
 
@@ -145,16 +144,16 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     }
 
     @Override
-    public ObservableList<Friends> getUserNotifications(Users user) {
+    public ArrayList<Users> getUserNotifications(Users user) {
         ResultSet rs = null;
         try (PreparedStatement ps = connection.prepareStatement("select u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on u.id=f.user_id where f.friend_id=? AND f.friend_status=? ;");) {
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Pending));
             rs = ps.executeQuery();
             while (rs.next()) {
-                Friends friend = new Friends();
+                Users friend =  extractFriendFromResultSet(rs);
 
-                friend.setFriend(extractFriendFromResultSet(rs));
+                //friend.setFriend(extractFriendFromResultSet(rs));
                 user.getRequest_notifications().add(friend);
             }
 

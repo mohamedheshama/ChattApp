@@ -5,8 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.project.Controller.ServicesImp;
+import org.project.Controller.ServicesInterface;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 /**
  * JavaFX App
@@ -31,8 +36,21 @@ public class App extends Application {
         return fxmlLoader.load();
     }
 
+    private static void initializeRMI(){
+        try {
+            ServicesInterface servicesImp = new ServicesImp();
+            Registry reg = LocateRegistry.createRegistry(1260);
+            reg.rebind("ServerServices", servicesImp);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public static void main(String[] args) {
+        initializeRMI();
         launch();
+
     }
 
 }
