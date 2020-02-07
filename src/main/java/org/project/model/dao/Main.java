@@ -14,8 +14,8 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         ConnectionStrategy connectionStrategy = MysqlConnection.getInstance();
         UsersDAOImpl usersDAO = new UsersDAOImpl(connectionStrategy);
-        Users user = usersDAO.login("0102354663");
-        System.out.println(user);
+        // Users user = usersDAO.login("0102354663");
+        //ystem.out.println(user);
 
         /*Users user2 = new Users();
         user2.setName("naruto");
