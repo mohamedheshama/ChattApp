@@ -7,7 +7,8 @@ import java.sql.SQLException;
 public class MysqlConnection implements ConnectionStrategy{
 
    static MysqlConnection connectionFactory;
-
+    private MysqlConnection() {
+    }
     //private String driverClassName = "oracle.jdbc.driver.OracleDriver";
     private String connectionUrl = "jdbc:mysql://localhost:3306/mydb";
     private String dbUser = "root";

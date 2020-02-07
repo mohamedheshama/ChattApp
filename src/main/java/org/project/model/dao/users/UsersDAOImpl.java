@@ -27,8 +27,9 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public Users login(String phoneNumber) {
         Users user;
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=? And password=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
             ps.setString(1, phoneNumber);
+            //ps.setString(2, password);
             rs = ps.executeQuery();
             if (rs.next()) {
                 user = extractUserFromResultSet(rs);
@@ -53,6 +54,8 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
     @Override
     public boolean register(Users user) {
+        if (isUserExist(user.getPhoneNumber()))
+            return false;
         //Check first if name exist using isUserExistMethod then register
         String sql = "Insert into users (phone_number,name,email,password,gender,country,date_of_birth,bio,status)" +
                 " values (?,?,?,?,?,?,?,?,?)";
@@ -73,7 +76,6 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             logger.warning(e.getMessage());
             e.printStackTrace();
         }
-
         return false;
     }
 
