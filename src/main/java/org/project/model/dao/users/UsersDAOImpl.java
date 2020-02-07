@@ -24,17 +24,18 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     }
 
     @Override
-    public Boolean login(String phoneNumber) {
+    public Users login(String phoneNumber) {
         Users user;
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=? And password=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
             ps.setString(1, phoneNumber);
+            //ps.setString(2, password);
             rs = ps.executeQuery();
             if (rs.next()) {
                 user = extractUserFromResultSet(rs);
                 getUserFriends(user);
                 getUserNotifications(user);
-                return true;
+                return user;
             }
 
         } catch (SQLException ex) {
@@ -48,7 +49,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 e.printStackTrace();
             }
         }
-        return false;
+        return null;
     }
 
     @Override

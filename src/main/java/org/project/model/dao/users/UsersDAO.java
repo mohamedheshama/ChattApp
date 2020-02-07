@@ -5,7 +5,7 @@ import org.project.model.dao.friends.Friends;
 
 public interface UsersDAO {
 
-    Boolean login(String phone_number);
+    Users login(String phone_number);
 
     boolean register(Users user);
 
