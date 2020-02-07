@@ -24,7 +24,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     }
 
     @Override
-    public Users login(String phoneNumber) {
+    public Boolean login(String phoneNumber) {
         Users user;
         ResultSet rs = null;
         try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
@@ -34,7 +34,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 user = extractUserFromResultSet(rs);
                 getUserFriends(user);
                 getUserNotifications(user);
-                return user;
+                return true;
             }
 
         } catch (SQLException ex) {
@@ -48,11 +48,13 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 e.printStackTrace();
             }
         }
-        return null;
+        return false;
     }
 
     @Override
     public boolean register(Users user) {
+        if (isUserExist(user.getPhoneNumber()))
+            return false;
         //Check first if name exist using isUserExistMethod then register
         String sql = "Insert into users (phone_number,name,email,password,gender,country,date_of_birth,bio,status)" +
                 " values (?,?,?,?,?,?,?,?,?)";
@@ -73,7 +75,6 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             logger.warning(e.getMessage());
             e.printStackTrace();
         }
-
         return false;
     }
 
