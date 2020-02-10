@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public interface UsersDAO {
 
-    Users login(String phone_number,String password);
+    Users login(String phone_number);
 
     boolean register(Users user);
 
@@ -18,6 +18,8 @@ public interface UsersDAO {
     ArrayList<Users>getUserNotifications(Users user);
 
     boolean isUserExist(String phone_number);
+
+    boolean matchUserNameAndPassword(String phoneNumber,String Password);
 
     boolean updateStatus(Users user, UserStatus status);
 }

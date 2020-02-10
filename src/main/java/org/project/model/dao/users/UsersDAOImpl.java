@@ -24,12 +24,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     }
 
     @Override
-    public Users login(String phoneNumber,String password) {
+    public Users login(String phoneNumber) {
         Users user;
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=? And password=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
             ps.setString(1, phoneNumber);
-            ps.setString(2, password);
             rs = ps.executeQuery();
             if (rs.next()) {
                 user = extractUserFromResultSet(rs);
@@ -51,6 +50,8 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         }
         return null;
     }
+
+
 
     @Override
     public boolean register(Users user) {
@@ -213,6 +214,23 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         return false;
 
 
+    }
+
+    @Override
+    public boolean matchUserNameAndPassword(String phoneNumber, String password) {
+        try {
+            PreparedStatement ps = connection.prepareStatement("select id,name from users where phone_number=? And password=?");
+            ps.setString(1, phoneNumber);
+            ps.setString(1, password);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next())
+                return true;
+
+        } catch (SQLException ex) {
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
+        }
+        return false;
     }
 
     @Override
