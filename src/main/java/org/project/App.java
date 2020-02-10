@@ -5,8 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.project.Controller.ServicesImp;
-import org.project.Controller.ServicesInterface;
+import org.project.controller.ServicesImp;
+import org.project.controller.ServicesInterface;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
