@@ -1,11 +1,11 @@
 package org.project.controller;
 
+import org.project.exceptions.UserAlreadyExistException;
 import org.project.model.connection.MysqlConnection;
 import org.project.model.dao.users.Users;
 import org.project.model.dao.users.UsersDAO;
 import org.project.model.dao.users.UsersDAOImpl;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
@@ -27,7 +27,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
-    public Boolean Register(Users user) throws RemoteException {
+    public Boolean Register(Users user) throws RemoteException, UserAlreadyExistException {
         return DAO.register(user);
     }
 
