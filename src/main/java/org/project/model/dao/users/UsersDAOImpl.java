@@ -1,6 +1,7 @@
 package org.project.model.dao.users;
 
 import javafx.collections.ObservableList;
+import org.project.exceptions.UserAlreadyExistException;
 import org.project.model.connection.ConnectionStrategy;
 import org.project.model.dao.friends.RequestStatus;
 
@@ -17,6 +18,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     ConnectionStrategy connectionStrategy;
     Connection connection;
     Logger logger = Logger.getLogger(UsersDAOImpl.class.getName());
+
 
     public UsersDAOImpl(ConnectionStrategy con) throws SQLException {
         this.connectionStrategy = con;
@@ -54,22 +56,17 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
 
     @Override
-    public boolean register(Users user) {
+    public boolean register(Users user)  throws UserAlreadyExistException{
         if (isUserExist(user.getPhoneNumber()))
-            return false;
+            throw new UserAlreadyExistException("User Already exist in our DB");
         //Check first if name exist using isUserExistMethod then register
-        String sql = "Insert into users (phone_number,name,email,password,gender,country,date_of_birth,bio,status)" +
-                " values (?,?,?,?,?,?,?,?,?)";
+        String sql = "Insert into users (phone_number,name,email,password)" +
+                " values (?,?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, user.getPhoneNumber());
             preparedStatement.setString(2, user.getName());
             preparedStatement.setString(3, user.getEmail());
             preparedStatement.setString(4, user.getPassword());
-            preparedStatement.setString(5, String.valueOf(user.getGender()));
-            preparedStatement.setString(6, user.getCountry());
-            preparedStatement.setDate(7, user.getDateOfBirth());
-            preparedStatement.setString(8, user.getBio());
-            preparedStatement.setString(9, String.valueOf(user.getStatus()));
             preparedStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
