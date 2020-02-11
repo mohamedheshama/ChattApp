@@ -2,13 +2,15 @@ package org.project.model.dao.users;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.project.model.dao.friends.Friends;
 
+
+import java.io.Serializable;
 import java.sql.Blob;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
-public class Users {
+public class Users implements Serializable {
     private int id;
     private String phoneNumber;
     private String name;
@@ -18,11 +20,11 @@ public class Users {
     private String country;
     private Date dateOfBirth;
     private String bio;
-    private Blob picture;
-    private byte[] displayPicture;
+    transient private Blob picture;
+    transient private byte[] displayPicture;
     private UserStatus status;
-    private ObservableList<Friends> friends = FXCollections.observableArrayList();
-    private ObservableList<Friends> request_notifications = FXCollections.observableArrayList();
+    private ArrayList<Users> friends = new ArrayList<>();
+    private ArrayList<Users> request_notifications = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -105,11 +107,11 @@ public class Users {
         this.status = status;
     }
 
-    public ObservableList<Friends> getFriends() {
+    public ArrayList<Users> getFriends() {
         return friends;
     }
 
-    public void setFriends(ObservableList<Friends> friends) {
+    public void setFriends(ArrayList<Users> friends) {
         this.friends = friends;
     }
 
@@ -122,11 +124,11 @@ public class Users {
         return displayPicture;
     }
 
-    public ObservableList<Friends> getRequest_notifications() {
+    public ArrayList<Users> getRequest_notifications() {
         return request_notifications;
     }
 
-    public void setRequest_notifications(ObservableList<Friends> request_notifications) {
+    public void setRequest_notifications(ArrayList<Users> request_notifications) {
         this.request_notifications = request_notifications;
     }
 
