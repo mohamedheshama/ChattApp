@@ -1,5 +1,7 @@
 package org.project.model.dao.users;
 
-public enum UserStatus {
+import java.io.Serializable;
+
+public enum UserStatus implements Serializable {
     Available, Busy, Away, Offline
 }

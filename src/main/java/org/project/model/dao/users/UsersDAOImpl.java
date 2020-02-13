@@ -1,14 +1,15 @@
 package org.project.model.dao.users;
 
 import javafx.collections.ObservableList;
+import org.project.exceptions.UserAlreadyExistException;
 import org.project.model.connection.ConnectionStrategy;
-import org.project.model.dao.friends.Friends;
 import org.project.model.dao.friends.RequestStatus;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 
@@ -17,6 +18,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     ConnectionStrategy connectionStrategy;
     Connection connection;
     Logger logger = Logger.getLogger(UsersDAOImpl.class.getName());
+
 
     public UsersDAOImpl(ConnectionStrategy con) throws SQLException {
         this.connectionStrategy = con;
@@ -51,21 +53,20 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         return null;
     }
 
+
+
     @Override
-    public boolean register(Users user) {
+    public boolean register(Users user)  throws UserAlreadyExistException{
+        if (isUserExist(user.getPhoneNumber()))
+            throw new UserAlreadyExistException("User Already exist in our DB");
         //Check first if name exist using isUserExistMethod then register
-        String sql = "Insert into users (phone_number,name,email,password,gender,country,date_of_birth,bio,status)" +
-                " values (?,?,?,?,?,?,?,?,?)";
+        String sql = "Insert into users (phone_number,name,email,password)" +
+                " values (?,?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, user.getPhoneNumber());
             preparedStatement.setString(2, user.getName());
             preparedStatement.setString(3, user.getEmail());
             preparedStatement.setString(4, user.getPassword());
-            preparedStatement.setString(5, String.valueOf(user.getGender()));
-            preparedStatement.setString(6, user.getCountry());
-            preparedStatement.setDate(7, user.getDateOfBirth());
-            preparedStatement.setString(8, user.getBio());
-            preparedStatement.setString(9, String.valueOf(user.getStatus()));
             preparedStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -73,7 +74,6 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             logger.warning(e.getMessage());
             e.printStackTrace();
         }
-
         return false;
     }
 
@@ -116,15 +116,14 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     }
 
     @Override
-    public ObservableList<Friends> getUserFriends(Users user) {
+    public ArrayList<Users> getUserFriends(Users user) {
         ResultSet rs = null;
         try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on f.friend_id=u.id where f.user_id=? AND f.friend_status=?;");) {
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Accepted));
             rs = ps.executeQuery();
             while (rs.next()) {
-                Friends friend = new Friends();
-                friend.setFriend(extractFriendFromResultSet(rs));
+                Users friend = extractFriendFromResultSet(rs);
                 user.getFriends().add(friend);
             }
 
@@ -143,16 +142,16 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     }
 
     @Override
-    public ObservableList<Friends> getUserNotifications(Users user) {
+    public ArrayList<Users> getUserNotifications(Users user) {
         ResultSet rs = null;
         try (PreparedStatement ps = connection.prepareStatement("select u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on u.id=f.user_id where f.friend_id=? AND f.friend_status=? ;");) {
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Pending));
             rs = ps.executeQuery();
             while (rs.next()) {
-                Friends friend = new Friends();
+                Users friend =  extractFriendFromResultSet(rs);
 
-                friend.setFriend(extractFriendFromResultSet(rs));
+                //friend.setFriend(extractFriendFromResultSet(rs));
                 user.getRequest_notifications().add(friend);
             }
 
@@ -212,6 +211,23 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         return false;
 
 
+    }
+
+    @Override
+    public boolean matchUserNameAndPassword(String phoneNumber, String password) {
+        try {
+            PreparedStatement ps = connection.prepareStatement("select id,name from users where phone_number=? And password=?");
+            ps.setString(1, phoneNumber);
+            ps.setString(1, password);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next())
+                return true;
+
+        } catch (SQLException ex) {
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
+        }
+        return false;
     }
 
     @Override

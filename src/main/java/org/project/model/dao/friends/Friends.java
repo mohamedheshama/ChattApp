@@ -3,7 +3,7 @@ package org.project.model.dao.friends;
 
 import org.project.model.dao.users.Users;
 
-public class Friends {
+/*public class Friends {
     private Users friend;
     private RequestStatus requestStatus;
 
@@ -23,3 +23,4 @@ public class Friends {
         this.requestStatus = requestStatus;
     }
 }
+*/
