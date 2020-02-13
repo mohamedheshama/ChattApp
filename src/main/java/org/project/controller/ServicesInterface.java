@@ -9,9 +9,7 @@ import java.util.ArrayList;
 
 public interface ServicesInterface extends Remote{
     public Users getUserData(String phoneNumber) throws RemoteException;
-
     public Boolean register(Users user) throws RemoteException, UserAlreadyExistException;
-
     public Boolean checkUserLogin(String phoneNumber, String password) throws RemoteException;
     public ArrayList<Users> getFriends(String phoneNumber)throws RemoteException;
     public ArrayList<Users> getNotifications(String phoneNumber) throws RemoteException;
