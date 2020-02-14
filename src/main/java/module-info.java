@@ -7,10 +7,8 @@ module org.project {
     requires javafx.graphics;
 
     opens org.project to javafx.fxml;
-    opens org.project.Controller.admin_home to javafx.fxml;
-    opens org.project.Controller.admin_home.right_side to javafx.fxml;
+    opens org.project.controller;
     exports org.project;
-    exports org.project.Controller.admin_home;
-    exports org.project.Controller.admin_home.right_side;
+
 
 }

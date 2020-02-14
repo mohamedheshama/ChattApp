@@ -1,6 +1,5 @@
 package org.project.model.dao.users;
 
-import javafx.collections.ObservableList;
 import org.project.exceptions.UserAlreadyExistException;
 import org.project.model.connection.ConnectionStrategy;
 import org.project.model.dao.friends.RequestStatus;
@@ -10,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 
@@ -56,7 +57,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
 
     @Override
-    public boolean register(Users user)  throws UserAlreadyExistException{
+    public boolean register(Users user) throws UserAlreadyExistException {
         if (isUserExist(user.getPhoneNumber()))
             throw new UserAlreadyExistException("User Already exist in our DB");
         //Check first if name exist using isUserExistMethod then register
@@ -218,10 +219,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         try {
             PreparedStatement ps = connection.prepareStatement("select id,name from users where phone_number=? And password=?");
             ps.setString(1, phoneNumber);
-            ps.setString(1, password);
+            ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
-            if (rs.next())
+            if (rs.next()) {
                 return true;
+            }
 
         } catch (SQLException ex) {
             logger.warning(ex.getSQLState());
@@ -258,10 +260,82 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     }
 
     @Override
+    public Map<String, Integer> getUsersNumByCountry() {
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        ResultSet resultSet = null;
+        try (PreparedStatement ps = connection.prepareStatement("SELECT count(id) ,country from users group by(country);")) {
+            resultSet = ps.executeQuery();
+            while (resultSet.next()) {
+                map.put(resultSet.getString(2), resultSet.getInt(1));
+            }
+
+        } catch (SQLException ex) {
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Integer> getUsersByGender() {
+        Map<String, Integer> usersNumByGendermap = new HashMap<String, Integer>();
+        ResultSet resultSet = null;
+        try (PreparedStatement ps = connection.prepareStatement("SELECT count(id) ,gender from users group by(gender);")) {
+            resultSet = ps.executeQuery();
+            while (resultSet.next()) {
+                usersNumByGendermap.put(resultSet.getString(2), resultSet.getInt(1));
+            }
+
+        } catch (SQLException ex) {
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return usersNumByGendermap;
+    }
+
+    @Override
+    public Map<String, Integer> getUsersByStatus() {
+        Map<String, Integer> usersNumByStatusmap = new HashMap<String, Integer>();
+        ResultSet resultSet = null;
+        try (PreparedStatement ps = connection.prepareStatement("Select Count(id),status from users where status in('Available','Offline') group by(status);;")) {
+            resultSet = ps.executeQuery();
+            while (resultSet.next()) {
+                usersNumByStatusmap.put(resultSet.getString(2), resultSet.getInt(1));
+            }
+
+        } catch (SQLException ex) {
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return usersNumByStatusmap;
+    }
+
+    @Override
     public Connection getConnection() throws SQLException {
-            Connection conn;
-            conn = connectionStrategy.getConnection();
-            return conn;
+        Connection conn;
+        conn = connectionStrategy.getConnection();
+        return conn;
 
     }
 }

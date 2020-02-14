@@ -11,7 +11,7 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="720.0" minWidth="1068.0" onMouseDragged="#draged"
             onMousePressed="#pressed" style="-fx-background-color: transparent;"
             stylesheets="@../../styles/home/fixed_content.css" xmlns="http://javafx.com/javafx/10.0.2-internal"
-            fx:controller="org.project.Controller.admin_home.MainAdminController">
+            fx:controller="org.project.controller.admin_home.MainAdminController">
    <children>
       <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0"
             AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

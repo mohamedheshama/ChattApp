@@ -1,4 +1,4 @@
-package org.project.Controller.admin_home;
+package org.project.controller.admin_home;
 
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
@@ -12,9 +12,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.project.controller.admin_home.right_side.DashboardController;
+import org.project.model.connection.ConnectionStrategy;
+import org.project.model.connection.MysqlConnection;
+import org.project.model.dao.users.UsersDAOImpl;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class MainAdminController implements Initializable {
@@ -32,17 +37,26 @@ public class MainAdminController implements Initializable {
     private Button stopServiceBtn;
     private VBox dashboard, users, announcement;
     private double x, y;
-    private boolean isMiximized = false;
+    private boolean isMaximized = false;
+    private ConnectionStrategy connectionStrategy;
+    private UsersDAOImpl usersDAO;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         dashboardHbox.setStyle("-fx-background-color:#2A3F54");
+        connectionStrategy = MysqlConnection.getInstance();
         try {
-            dashboard = FXMLLoader.load(getClass().getResource("/org/project/views/admin_home/right_side/dashboard_view.fxml"));
+            usersDAO = new UsersDAOImpl(connectionStrategy);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/dashboard_view.fxml"));
+            dashboard = loader.load();
+            DashboardController dashboardController = loader.<DashboardController>getController();
+            dashboardController.setUsersDAO(usersDAO);
             users = FXMLLoader.load(getClass().getResource("/org/project/views/admin_home/right_side/users_view.fxml"));
             announcement = FXMLLoader.load(getClass().getResource("/org/project/views/admin_home/right_side/announcement_view.fxml"));
             setNode(dashboard);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -112,11 +126,11 @@ public class MainAdminController implements Initializable {
     public void handleMaximize(MouseEvent mouseEvent) {
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.setFullScreenExitHint(" ");
-        if (!isMiximized) {
-            isMiximized = true;
+        if (!isMaximized) {
+            isMaximized = true;
             stage.setMaximized(true);
         } else {
-            isMiximized = false;
+            isMaximized = false;
             stage.setMaximized(false);
         }
 

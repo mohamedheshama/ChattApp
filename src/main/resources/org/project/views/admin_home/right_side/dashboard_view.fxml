@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="rightContentPane" alignment="CENTER" prefWidth="900.0"
       stylesheets="@../../../styles/home/dashboard.css" xmlns="http://javafx.com/javafx/10.0.2-internal"
-      fx:controller="org.project.Controller.admin_home.right_side.DashboardController">
+      fx:controller="org.project.controller.admin_home.right_side.DashboardController">
    <children>
       <VBox prefHeight="365.0">
          <children>

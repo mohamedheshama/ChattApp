@@ -9,11 +9,17 @@ import org.project.model.dao.users.Users;
 import org.project.model.dao.users.UsersDAOImpl;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
         ConnectionStrategy connectionStrategy = MysqlConnection.getInstance();
         UsersDAOImpl usersDAO = new UsersDAOImpl(connectionStrategy);
+        Map<String,Integer> map = usersDAO.getUsersNumByCountry();
+          for(Map.Entry m:map.entrySet()){
+            System.out.println(m.getKey()+" "+m.getValue());
+          }
         // Users user = usersDAO.login("0102354663");
         //ystem.out.println(user);
 

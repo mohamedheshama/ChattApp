@@ -1,6 +1,5 @@
 package org.project.controller;
 
-import org.project.exceptions.UserAlreadyExistException;
 import org.project.model.connection.MysqlConnection;
 import org.project.model.dao.users.Users;
 import org.project.model.dao.users.UsersDAO;
@@ -27,13 +26,13 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
-    public Boolean register(Users user) throws RemoteException, UserAlreadyExistException {
+    public Boolean register(Users user) throws RemoteException, SQLException {
         return DAO.register(user);
     }
 
     @Override
     public Boolean checkUserLogin(String phoneNumber, String password) throws RemoteException {
-        return null;
+        return DAO.matchUserNameAndPassword(phoneNumber, password);
     }
 
     @Override

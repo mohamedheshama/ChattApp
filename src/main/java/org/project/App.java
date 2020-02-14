@@ -6,8 +6,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.project.controller.ServicesImp;
+import org.project.controller.ServicesInterface;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 /**
  * JavaFX App
@@ -16,14 +21,13 @@ public class App extends Application {
 
     private static Scene scene;
 
-    private static void initializeRMI() {
-      /*  try {
-            ServicesInterface servicesImp = new ServicesImp();
-            Registry reg = LocateRegistry.createRegistry(1260);
-            reg.rebind("ServerServices", servicesImp);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }*/
+    @Override
+    public void start(Stage stage) throws IOException {
+        scene = new Scene(loadFXML("views/admin_home/home"));
+        stage.setScene(scene);
+        stage.setMinWidth(1068);
+        stage.initStyle(StageStyle.TRANSPARENT);
+        stage.show();
     }
 
     static void setRoot(String fxml) throws IOException {
@@ -35,13 +39,14 @@ public class App extends Application {
         return fxmlLoader.load();
     }
 
-    @Override
-    public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("views/admin_home/home"));
-        stage.setScene(scene);
-        stage.setMinWidth(1068);
-        stage.initStyle(StageStyle.TRANSPARENT);
-        stage.show();
+    private static void initializeRMI(){
+        try {
+            ServicesInterface servicesImp = new ServicesImp();
+            Registry reg = LocateRegistry.createRegistry(1260);
+            reg.rebind("ServerServices", servicesImp);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
 
