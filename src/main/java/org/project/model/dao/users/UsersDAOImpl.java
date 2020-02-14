@@ -1,6 +1,5 @@
 package org.project.model.dao.users;
 
-import javafx.collections.ObservableList;
 import org.project.exceptions.UserAlreadyExistException;
 import org.project.model.connection.ConnectionStrategy;
 import org.project.model.dao.friends.RequestStatus;
@@ -56,7 +55,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
 
     @Override
-    public boolean register(Users user)  throws UserAlreadyExistException{
+    public boolean register(Users user) throws UserAlreadyExistException {
         if (isUserExist(user.getPhoneNumber()))
             throw new UserAlreadyExistException("User Already exist in our DB");
         //Check first if name exist using isUserExistMethod then register
@@ -218,10 +217,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         try {
             PreparedStatement ps = connection.prepareStatement("select id,name from users where phone_number=? And password=?");
             ps.setString(1, phoneNumber);
-            ps.setString(1, password);
+            ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
-            if (rs.next())
+            if (rs.next()) {
                 return true;
+            }
 
         } catch (SQLException ex) {
             logger.warning(ex.getSQLState());

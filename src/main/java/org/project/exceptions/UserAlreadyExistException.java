@@ -1,6 +1,8 @@
 package org.project.exceptions;
 
-public class UserAlreadyExistException extends Exception {
+import java.sql.SQLException;
+
+public class UserAlreadyExistException extends SQLException {
     public UserAlreadyExistException(String message) {
         super(message);
     }

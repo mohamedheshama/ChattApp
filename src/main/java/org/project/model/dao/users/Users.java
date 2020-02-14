@@ -1,8 +1,6 @@
 package org.project.model.dao.users;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
+import org.project.model.ChatRoom;
 
 import java.io.Serializable;
 import java.sql.Blob;
@@ -25,7 +23,7 @@ public class Users implements Serializable {
     private UserStatus status;
     private ArrayList<Users> friends = new ArrayList<>();
     private ArrayList<Users> request_notifications = new ArrayList<>();
-
+    private ArrayList<ChatRoom> chatRooms = new ArrayList<>();
     public int getId() {
         return id;
     }
