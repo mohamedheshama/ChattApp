@@ -41,7 +41,6 @@ public class App extends Application {
             ServicesInterface servicesImp = new ServicesImp();
             Registry reg = LocateRegistry.createRegistry(1260);
             reg.rebind("ServerServices", servicesImp);
-            System.out.println("hello from th other side");
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -50,7 +49,7 @@ public class App extends Application {
 
     public static void main(String[] args) {
         initializeRMI();
-      //  launch();
+        launch();
 
     }
 
