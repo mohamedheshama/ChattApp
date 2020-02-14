@@ -1,6 +1,8 @@
 package org.project.model.dao.users;
 
+import javafx.collections.ObservableList;
 import org.project.exceptions.UserAlreadyExistException;
+//import org.project.model.dao.friends.Friends;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -14,10 +16,13 @@ public interface UsersDAO {
     boolean register(Users user) throws UserAlreadyExistException;
 
     boolean updateUser(Users user);
+    boolean deleteUSer(Users user);
 
     ArrayList<Users> getUserFriends(Users user);
 
-    ArrayList<Users> getUserNotifications(Users user);
+    ObservableList<Users>getUsers();
+
+    ArrayList<Users>getUserNotifications(Users user);
 
     boolean isUserExist(String phone_number);
 

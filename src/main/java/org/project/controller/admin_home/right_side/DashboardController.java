@@ -74,6 +74,7 @@ public class DashboardController implements Initializable {
 
     }
 
+
     private void drawUsersStatusChart(StackPane stackPane, ObservableList<PieChart.Data> usersGenderList) {
         int UsersNum = 0;
         Map<String, Integer> map = usersDAO.getUsersByStatus();

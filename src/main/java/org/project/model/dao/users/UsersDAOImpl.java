@@ -1,5 +1,7 @@
 package org.project.model.dao.users;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.project.exceptions.UserAlreadyExistException;
 import org.project.model.connection.ConnectionStrategy;
 import org.project.model.dao.friends.RequestStatus;
@@ -83,8 +85,8 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         // make sure no empty mandatory fields
         // make sure input is validated
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE users.phone_number=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
-            ps.setString(1, user.getPhoneNumber());
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE users.id=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
+            ps.setInt(1, user.getId());
             rs = ps.executeQuery();
             if (rs.next()) {
                 rs.updateString("phone_number", user.getPhoneNumber());
@@ -97,6 +99,33 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 rs.updateString("bio", user.getBio());
                 rs.updateString("status", String.valueOf(user.getStatus()));
                 rs.updateRow();
+                return true;
+            }
+
+        } catch (SQLException e) {
+            logger.warning(e.getSQLState());
+            logger.warning(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        return false;
+    }
+
+    @Override
+    public boolean deleteUSer(Users user) {
+        ResultSet rs = null;
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE users.phone_number=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
+            ps.setString(1, user.getPhoneNumber());
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                rs.deleteRow();
                 return true;
             }
 
@@ -140,6 +169,35 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             }
         }
         return null;
+    }
+
+    @Override
+    public ObservableList<Users> getUsers() {
+        ObservableList<Users> users= FXCollections.observableArrayList();;
+        ResultSet rs = null;
+        try (PreparedStatement ps = connection.prepareStatement("select * FROM users ;")) {
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Users user =  extractUserFromResultSet(rs);
+                users.add(user);
+
+                //friend.setFriend(extractFriendFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return users;
+
     }
 
     @Override
@@ -333,9 +391,9 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
     @Override
     public Connection getConnection() throws SQLException {
-        Connection conn;
-        conn = connectionStrategy.getConnection();
-        return conn;
+            Connection conn;
+            conn = connectionStrategy.getConnection();
+            return conn;
 
     }
 }

@@ -7,8 +7,12 @@ module org.project {
     requires javafx.graphics;
 
     opens org.project to javafx.fxml;
-    opens org.project.controller;
+    opens org.project.controller.admin_home to javafx.fxml;
+    opens org.project.controller.admin_home.right_side to javafx.fxml;
+    opens org.project.model.dao.users to javafx.base;
     exports org.project;
-
+    exports org.project.controller.admin_home;
+    exports org.project.controller.admin_home.right_side;
+    opens org.project.controller;
 
 }

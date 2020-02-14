@@ -1,6 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.project.controller.admin_home.right_side.UsersController">
+   <children>
+      <HBox prefHeight="59.0" prefWidth="561.0">
+         <children>
+                    <Button fx:id="insert" mnemonicParsing="false" onAction="#Insert" style="-fx-background-color: aliceBlue; -fx-background-radius: 20;" text="Add User">
+             <HBox.margin>
+                 <Insets right="50.0" />
+             </HBox.margin>
 
 
-<VBox xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.project.controller.admin_home.right_side.UsersController" />
+
+
+
+
+             <font>
+                 <Font name="System Bold" size="18.0" />
+             </font>
+                    </Button>
+
+                          <Button mnemonicParsing="false" onAction="#delete" style="-fx-background-color: aliceBlue; -fx-background-radius: 20;" text="Delete">
+                        <HBox.margin>
+                            <Insets right="50.0" />
+                        </HBox.margin>
+                        <font>
+                            <Font name="System Bold" size="18.0" />
+                        </font>
+                    </Button>
+
+
+
+                          <Button mnemonicParsing="false" onAction="#Update" style="-fx-background-color: aliceBlue; -fx-background-radius: 20;" text="Update">
+                        <HBox.margin>
+                            <Insets right="50.0" />
+                        </HBox.margin>
+                        <font>
+                            <Font name="System Bold" size="18.0" />
+                        </font>
+                    </Button>
+
+
+               </children>
+      </HBox>
+      <HBox prefHeight="38.0" prefWidth="561.0">
+         <children>
+                    <TextField fx:id="phoneTxt" prefHeight="25.0" prefWidth="122.0" promptText="Phone" style="-fx-background-color: aliceBlue; -fx-background-radius: 20;">
+
+                        <HBox.margin>
+                            <Insets right="50.0" />
+                        </HBox.margin>
+                        <font>
+                            <Font name="System Bold" size="10.0" />
+                        </font>
+                    </TextField>
+
+
+                    <TextField fx:id="emailTxt" prefHeight="25.0" prefWidth="122.0" promptText="Email" style="-fx-background-color: aliceBlue; -fx-background-radius: 20;">
+                        <HBox.margin>
+                            <Insets right="50.0" />
+                        </HBox.margin>
+                        <font>
+                            <Font name="System Bold" size="10.0" />
+                        </font>
+                    </TextField>
+
+
+                    <TextField fx:id="nameTxt" prefHeight="25.0" prefWidth="122.0" promptText="UserName" style="-fx-background-color: aliceBlue; -fx-background-radius: 20;">
+                        <HBox.margin>
+                            <Insets right="50.0" />
+                        </HBox.margin>
+
+
+                        <font>
+                            <Font name="System Bold" size="10.0" />
+                        </font>
+                    </TextField>
+
+                    <TextField fx:id="passwordTxt" prefHeight="25.0" prefWidth="122.0" promptText="Password" style="-fx-background-color: aliceBlue; -fx-background-radius: 20;">
+                        <HBox.margin>
+                            <Insets right="50.0" />
+                        </HBox.margin>
+                        <font>
+                            <Font name="System Bold" size="10.0" />
+                        </font>
+                    </TextField>
+
+         </children>
+      </HBox>
+      <HBox prefHeight="40.0" prefWidth="561.0">
+         <children>
+            <Label fx:id="valErrorlbl" />
+         </children>
+      </HBox>
+              <TableView id="userTable" fx:id="tableView" editable="true" layoutX="19.0" layoutY="120.0" prefHeight="354.0" prefWidth="561.0">
+                  <columns>
+                      <TableColumn fx:id="phoneCol" prefWidth="122.0" text="Phone" />
+                      <TableColumn fx:id="useCol" prefWidth="123.0" text="UserName" />
+                      <TableColumn fx:id="emailCol" prefWidth="181.0" text="Email" />
+                      <TableColumn fx:id="passwordCol" minWidth="2.0" prefWidth="134.0" text="Password" />
+                  </columns>
+              </TableView>
+
+   </children>
+</VBox>

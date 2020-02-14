@@ -16,7 +16,7 @@ public class MysqlConnection implements ConnectionStrategy{
     @Override
     public Connection getConnection() throws SQLException {
         Connection conn = null;
-        conn = DriverManager.getConnection(connectionUrl, dbUser, dbPwd);
+        conn = DriverManager.getConnection(connectionUrl, dbUser, "");
         return conn;
     }
 
