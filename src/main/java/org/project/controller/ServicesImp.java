@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ServicesImp extends UnicastRemoteObject implements ServicesInterface {
-    UsersDAO DAO=null;
+    UsersDAO DAO;
     public ServicesImp() throws RemoteException {
        try {
             DAO= new UsersDAOImpl(MysqlConnection.getInstance());
@@ -27,7 +27,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
-    public Boolean Register(Users user) throws RemoteException, UserAlreadyExistException {
+    public Boolean register(Users user) throws RemoteException, UserAlreadyExistException {
         return DAO.register(user);
     }
 
