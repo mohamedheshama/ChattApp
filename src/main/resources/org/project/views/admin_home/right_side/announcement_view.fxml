@@ -3,4 +3,4 @@
 
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.2-internal"
-      fx:controller="org.project.Controller.admin_home.right_side.AnnouncementController"/>
+      fx:controller="org.project.controller.admin_home.right_side.AnnouncementController"/>

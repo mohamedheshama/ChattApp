@@ -1,4 +1,4 @@
-package org.project.Controller.admin_home.right_side;
+package org.project.controller.admin_home.right_side;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,8 +8,10 @@ import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.StackPane;
+import org.project.model.dao.users.UsersDAOImpl;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable {
@@ -22,22 +24,27 @@ public class DashboardController implements Initializable {
     @FXML
     private PieChart usersStatusChart;
 
+    public void setUsersDAO(UsersDAOImpl usersDAO) {
+        this.usersDAO = usersDAO;
+        drawUsersCountryChart(usersCountriestdata);
+        drawUsersStatusChart(userstatusChartPane, usersStatusrdata);
+        drawUsersGenderChart(userGenderChartPane, usersGenderdata);
+    }
 
     private ObservableList<XYChart.Series<String, Number>> usersCountriestdata = FXCollections.observableArrayList();
     private ObservableList<PieChart.Data> usersGenderdata = FXCollections.observableArrayList();
     private ObservableList<PieChart.Data> usersStatusrdata = FXCollections.observableArrayList();
-
+    private UsersDAOImpl usersDAO;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        drawUsersCountryChart(usersCountriestdata);
-        drawUsersStatusChart(userstatusChartPane, usersStatusrdata);
-        drawUsersGenderChart(userGenderChartPane, usersGenderdata);
+
 
     }
 
 
-    private void drawPieChart(StackPane stackPane, ObservableList<PieChart.Data> observableList, double usersNo) {
+    private void drawPieChart(StackPane stackPane, ObservableList<PieChart.Data> observableList, double usersNo, boolean genderChart) {
+        String tooltipText = "";
         PieChart pieChart = new PieChart();
         pieChart.setData(observableList);
         stackPane.getChildren().add(pieChart);
@@ -46,24 +53,38 @@ public class DashboardController implements Initializable {
         for (PieChart.Data data : pieChart.getData()) {
             Node slice = data.getNode();
             double percent = (data.getPieValue() / usersNo * 100);
-            String tip = data.getName() + " = " + String.format("%.2f", percent) + "%";
-            Tooltip tooltip = new Tooltip(tip);
+            if (genderChart)
+                tooltipText = data.getName() + " = " + String.format("%.2f", percent) + "%";
+            else
+                tooltipText = data.getName() + " = " + (int) data.getPieValue();
+            Tooltip tooltip = new Tooltip(tooltipText);
             Tooltip.install(slice, tooltip);
 
         }
     }
 
     private void drawUsersGenderChart(StackPane stackPane, ObservableList<PieChart.Data> usersGenderList) {
-        usersGenderList.add(new PieChart.Data("Famale", 100));
-        usersGenderList.add(new PieChart.Data("Male", 150));
-        drawPieChart(stackPane, usersGenderList, 250);
+        int UsersNum = 0;
+        Map<String, Integer> map = usersDAO.getUsersByGender();
+        for (Map.Entry m : map.entrySet()) {
+            usersGenderList.add(new PieChart.Data(m.getKey().toString(), Integer.parseInt(m.getValue().toString())));
+            UsersNum += Integer.parseInt(m.getValue().toString());
+        }
+        drawPieChart(stackPane, usersGenderList, UsersNum, true);
 
     }
 
     private void drawUsersStatusChart(StackPane stackPane, ObservableList<PieChart.Data> usersGenderList) {
-        usersGenderList.add(new PieChart.Data("ON-Line", 200));
-        usersGenderList.add(new PieChart.Data("OFF-Line", 100));
-        drawPieChart(stackPane, usersGenderList, 300);
+        int UsersNum = 0;
+        Map<String, Integer> map = usersDAO.getUsersByStatus();
+        for (Map.Entry m : map.entrySet()) {
+            if (m.getKey().toString().equals("Offline"))
+                usersGenderList.add(new PieChart.Data("OFF-Line", Integer.parseInt(m.getValue().toString())));
+            else
+                usersGenderList.add(new PieChart.Data("ON-Line", Integer.parseInt(m.getValue().toString())));
+            UsersNum += Integer.parseInt(m.getValue().toString());
+        }
+        drawPieChart(stackPane, usersGenderList, UsersNum, false);
 
     }
 
@@ -73,11 +94,12 @@ public class DashboardController implements Initializable {
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("(NO.of Users)");
         XYChart.Series countriesSeries = new XYChart.Series();
-        countriesSeries.getData().add(new XYChart.Data("Eygpt", 100));
-        countriesSeries.getData().add(new XYChart.Data("Brazil", 200));
-        countriesSeries.getData().add(new XYChart.Data("France", 500));
-        countriesSeries.getData().add(new XYChart.Data("Italy", 650));
-        countriesSeries.getData().add(new XYChart.Data("USA", 900));
+
+        Map<String, Integer> map = usersDAO.getUsersNumByCountry();
+        for (Map.Entry m : map.entrySet()) {
+            countriesSeries.getData().add(new XYChart.Data(m.getKey(), m.getValue()));
+        }
+
         usersCountriestdata.add(countriesSeries);
         usresCountryChart.setData(usersCountriestdata);
         usresCountryChart.setTitle("statistics about the users’ country");
