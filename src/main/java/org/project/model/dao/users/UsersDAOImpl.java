@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 
@@ -258,10 +260,82 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     }
 
     @Override
+    public Map<String, Integer> getUsersNumByCountry() {
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        ResultSet resultSet = null;
+        try (PreparedStatement ps = connection.prepareStatement("SELECT count(id) ,country from users group by(country);")) {
+            resultSet = ps.executeQuery();
+            while (resultSet.next()) {
+                map.put(resultSet.getString(2), resultSet.getInt(1));
+            }
+
+        } catch (SQLException ex) {
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Integer> getUsersByGender() {
+        Map<String, Integer> usersNumByGendermap = new HashMap<String, Integer>();
+        ResultSet resultSet = null;
+        try (PreparedStatement ps = connection.prepareStatement("SELECT count(id) ,gender from users group by(gender);")) {
+            resultSet = ps.executeQuery();
+            while (resultSet.next()) {
+                usersNumByGendermap.put(resultSet.getString(2), resultSet.getInt(1));
+            }
+
+        } catch (SQLException ex) {
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return usersNumByGendermap;
+    }
+
+    @Override
+    public Map<String, Integer> getUsersByStatus() {
+        Map<String, Integer> usersNumByStatusmap = new HashMap<String, Integer>();
+        ResultSet resultSet = null;
+        try (PreparedStatement ps = connection.prepareStatement("Select Count(id),status from users where status in('Available','Offline') group by(status);;")) {
+            resultSet = ps.executeQuery();
+            while (resultSet.next()) {
+                usersNumByStatusmap.put(resultSet.getString(2), resultSet.getInt(1));
+            }
+
+        } catch (SQLException ex) {
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return usersNumByStatusmap;
+    }
+
+    @Override
     public Connection getConnection() throws SQLException {
-            Connection conn;
-            conn = connectionStrategy.getConnection();
-            return conn;
+        Connection conn;
+        conn = connectionStrategy.getConnection();
+        return conn;
 
     }
 }

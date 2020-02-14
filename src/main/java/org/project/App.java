@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.project.controller.ServicesImp;
 import org.project.controller.ServicesInterface;
 
@@ -22,8 +23,10 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("views/primary"));
+        scene = new Scene(loadFXML("views/admin_home/home"));
         stage.setScene(scene);
+        stage.setMinWidth(1068);
+        stage.initStyle(StageStyle.TRANSPARENT);
         stage.show();
     }
 
