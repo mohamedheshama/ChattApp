@@ -49,14 +49,12 @@ public class MainAdminController implements Initializable {
             usersDAO = new UsersDAOImpl(connectionStrategy);
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/dashboard_view.fxml"));
             dashboard = loader.load();
-            DashboardController dashboardController = loader.<DashboardController>getController();
+            DashboardController dashboardController = loader.getController();
             dashboardController.setUsersDAO(usersDAO);
             users = FXMLLoader.load(getClass().getResource("/org/project/views/admin_home/right_side/users_view.fxml"));
             announcement = FXMLLoader.load(getClass().getResource("/org/project/views/admin_home/right_side/announcement_view.fxml"));
             setNode(dashboard);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
 
@@ -65,8 +63,7 @@ public class MainAdminController implements Initializable {
     //Set selected node to a content holder
     private void setNode(Node node) {
         rightContentPane.getChildren().clear();
-        rightContentPane.getChildren().add((Node) node);
-
+        rightContentPane.getChildren().add(node);
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(1500));
         fadeTransition.setNode(node);
         fadeTransition.setFromValue(0.1);

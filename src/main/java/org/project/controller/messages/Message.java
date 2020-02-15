@@ -15,13 +15,11 @@ public class Message implements Serializable {
     private int fontSize;
     private String fontWeight;
     private Users user;
-    // private ArrayList<Users> listUsers;
-    // private ArrayList<Users> users;
-    //private UserStatus status;
-    private String picture;
+    private String chatId;
 
-    public Message() {
-    }
+    public String getChatId() { return chatId; }
+
+    public void setChatId(String chatId) { this.chatId = chatId; }
 
     public String getFontFamily() {
         return fontFamily;
@@ -55,6 +53,10 @@ public class Message implements Serializable {
         this.fontWeight = fontWeight;
     }
 
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+
     public Users getUser() {
         return user;
     }
@@ -63,12 +65,16 @@ public class Message implements Serializable {
         this.user = user;
     }
 
-    public String getPicture() {
-        return picture;
+    // private ArrayList<Users> listUsers;
+    // private ArrayList<Users> users;
+    //private UserStatus status;
+    private String picture;
+
+    public Message() {
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public String getPicture() {
+        return picture;
     }
 
     public String getName() {

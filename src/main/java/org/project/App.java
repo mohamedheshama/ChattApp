@@ -23,7 +23,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("views/admin_home/home"));
+        scene = new Scene(loadFXML("/org/project/views/admin_home/home"));
         stage.setScene(scene);
         stage.setMinWidth(1068);
         stage.initStyle(StageStyle.TRANSPARENT);

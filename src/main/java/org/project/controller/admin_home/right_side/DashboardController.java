@@ -26,6 +26,7 @@ public class DashboardController implements Initializable {
 
     public void setUsersDAO(UsersDAOImpl usersDAO) {
         this.usersDAO = usersDAO;
+        // todo nooooooooooote if country is null it will appear nullpointer exception
         drawUsersCountryChart(usersCountriestdata);
         drawUsersStatusChart(userstatusChartPane, usersStatusrdata);
         drawUsersGenderChart(userGenderChartPane, usersGenderdata);
@@ -48,8 +49,6 @@ public class DashboardController implements Initializable {
         PieChart pieChart = new PieChart();
         pieChart.setData(observableList);
         stackPane.getChildren().add(pieChart);
-
-
         for (PieChart.Data data : pieChart.getData()) {
             Node slice = data.getNode();
             double percent = (data.getPieValue() / usersNo * 100);
@@ -95,7 +94,6 @@ public class DashboardController implements Initializable {
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("(NO.of Users)");
         XYChart.Series countriesSeries = new XYChart.Series();
-
         Map<String, Integer> map = usersDAO.getUsersNumByCountry();
         for (Map.Entry m : map.entrySet()) {
             countriesSeries.getData().add(new XYChart.Data(m.getKey(), m.getValue()));

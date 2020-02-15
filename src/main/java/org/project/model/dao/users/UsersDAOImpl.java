@@ -148,9 +148,17 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     @Override
     public ArrayList<Users> getUserFriends(Users user) {
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on f.friend_id=u.id where f.user_id=? AND f.friend_status=?;");) {
+        try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status" +
+                " FROM users u JOIN friends f on f.friend_id=u.id" +
+                " where f.user_id=? AND f.friend_status=?" +
+                " union" +
+                " SELECT u.id, u.name , u.phone_number, u.status" +
+                " FROM users u JOIN friends f on f.friend_id=u.id" +
+                " where f.friend_id=? AND f.friend_status=?;");) {
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Accepted));
+            ps.setInt(3, user.getId());
+            ps.setString(4, String.valueOf(RequestStatus.Accepted));
             rs = ps.executeQuery();
             while (rs.next()) {
                 Users friend = extractFriendFromResultSet(rs);
