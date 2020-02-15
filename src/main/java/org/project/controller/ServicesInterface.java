@@ -25,5 +25,7 @@ public interface ServicesInterface extends Remote {
     public void sendMessage(Message newMsg, ChatRoom chatRoom) throws RemoteException;
 
     public void registerClient(ClientInterface clientImp) throws RemoteException;
+
+    public ChatRoom requestChatRoom(ArrayList<Users> chatroomUsers) throws RemoteException;
     // check if phone number exists, update online users
 }
