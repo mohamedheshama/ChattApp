@@ -20,8 +20,9 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     CopyOnWriteArrayList<ChatRoom> chatRooms;
 
     public ServicesImp() throws RemoteException {
+        super(1260);
         try {
-            DAO = new UsersDAOImpl(MysqlConnection.getInstance());
+                        DAO = new UsersDAOImpl(MysqlConnection.getInstance());
             clients = new CopyOnWriteArrayList<>();
             chatRooms = new CopyOnWriteArrayList<>();
         } catch (SQLException e) {
@@ -67,7 +68,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
                 try {
                     if (clientInterface.getUser().getId() == user.getId()) {
                         System.out.println("sending message to " + clientInterface.getUser());
-                        clientInterface.recieveMsg(newMsg);
+                        clientInterface.recieveMsg(newMsg , chatRoom);
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();
