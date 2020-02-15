@@ -15,6 +15,6 @@ module org.project {
     exports org.project.controller.admin_home.right_side;
     opens org.project.controller;
     exports org.project.model.dao.users;
-
+    exports org.project.model;
 
 }

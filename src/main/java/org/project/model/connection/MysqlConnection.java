@@ -12,7 +12,7 @@ public class MysqlConnection implements ConnectionStrategy{
     //private String driverClassName = "oracle.jdbc.driver.OracleDriver";
     private String connectionUrl = "jdbc:mysql://localhost:3306/mydb";
     private String dbUser = "root";
-    private String dbPwd = "password";
+    private String dbPwd = "6020";
     @Override
     public Connection getConnection() throws SQLException {
         Connection conn = null;

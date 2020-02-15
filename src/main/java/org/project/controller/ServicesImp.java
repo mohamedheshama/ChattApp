@@ -94,7 +94,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
             return chatRoomExist;
         }
         chatRoomExist = new ChatRoom();
-        chatRoomExist.setChatRoomId("x");
+        chatRoomExist.setChatRoomId(chatroomUsers.toString());
         chatRoomExist.setUsers(chatroomUsers);
         chatRooms.add(chatRoomExist);
         addChatRoomToAllClients(chatroomUsers , chatRoomExist);
