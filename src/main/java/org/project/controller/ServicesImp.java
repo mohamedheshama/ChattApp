@@ -3,6 +3,7 @@ package org.project.controller;
 import org.project.controller.messages.Message;
 import org.project.model.ChatRoom;
 import org.project.model.connection.MysqlConnection;
+import org.project.model.dao.users.UserStatus;
 import org.project.model.dao.users.Users;
 import org.project.model.dao.users.UsersDAO;
 import org.project.model.dao.users.UsersDAOImpl;
@@ -107,9 +108,6 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
         System.out.println(chatroomUsers.get(1).getChatRooms() + "  aloooooooo");
         ChatRoom chatRoomExist = checkChatRoomExist(chatroomUsers.get(1));
         if (chatRoomExist != null){
-            System.out.println("-------------------------------------------------------------------");
-            System.out.println("chat room Already Exist");
-            System.out.println("-------------------------------------------------------------------");
             return chatRoomExist;
         }
         chatRoomExist = new ChatRoom();
@@ -118,6 +116,11 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
         chatRooms.add(chatRoomExist);
         addChatRoomToAllClients(chatroomUsers , chatRoomExist);
         return chatRoomExist;
+    }
+
+    @Override
+    public boolean changeUserStatus(Users users, UserStatus userStatus) throws RemoteException {
+        return  DAO.updateStatus(users, userStatus);
     }
 
     private void addChatRoomToAllClients(ArrayList<Users> chatroomUsers, ChatRoom chatRoomExist) {

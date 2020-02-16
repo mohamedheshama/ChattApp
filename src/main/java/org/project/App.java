@@ -10,9 +10,12 @@ import org.project.controller.ServicesImp;
 import org.project.controller.ServicesInterface;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * JavaFX App
@@ -52,6 +55,9 @@ public class App extends Application {
 
 
     public static void main(String[] args) {
+
+        List<String> collect = Arrays.asList(Locale.getAvailableLocales()).stream().map(Locale::getDisplayCountry).filter(s -> !s.isEmpty()).sorted().collect(Collectors.toList());
+        System.out.println(collect);
         initializeRMI();
         launch();
 

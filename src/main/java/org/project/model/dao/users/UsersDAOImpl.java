@@ -6,6 +6,7 @@ import org.project.exceptions.UserAlreadyExistException;
 import org.project.model.connection.ConnectionStrategy;
 import org.project.model.dao.friends.RequestStatus;
 
+import javax.xml.transform.stream.StreamResult;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -300,28 +301,16 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
     @Override
     public boolean updateStatus(Users user, UserStatus status) {
-        ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("select id,status from users where users.id=?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
-            ps.setInt(1, user.getId());
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                rs.updateString("status", String.valueOf(status));
-                rs.updateRow();
-            }
-            return true;
+        try (PreparedStatement ps = connection.prepareStatement("update users set Status = '?' where id = ?;")) {
+            ps.setString(1, String.valueOf(status));
+            ps.setInt(2, user.getId());
+            if (ps.executeUpdate() > 0)
+                return true;
         } catch (SQLException e) {
             logger.warning(e.getSQLState());
             logger.warning(e.getMessage());
             e.printStackTrace();
-        } finally {
-            try {
-                rs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
-
-
         return false;
     }
 
