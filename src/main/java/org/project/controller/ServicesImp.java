@@ -60,6 +60,24 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     public void notifyUpdate(Users users) throws RemoteException {
 
     }
+@Override
+    public void notifyUser(Message newMsg, ChatRoom chatRoom) throws RemoteException{
+    chatRoom.getUsers().forEach(user -> {
+        clients.forEach(clientInterface -> {
+            try {
+                if (clientInterface.getUser().getId() == user.getId()) {
+                    System.out.println("sending file to " + clientInterface.getUser());
+                    clientInterface.recieveFile(newMsg , chatRoom);
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        });
+    });
+
+
+
+    }
 
     @Override
     public void sendMessage(Message newMsg, ChatRoom chatRoom) throws RemoteException {
