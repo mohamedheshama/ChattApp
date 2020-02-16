@@ -1,3 +1,6 @@
+/**
+ *
+ */
 module org.project {
     requires javafx.controls;
     requires javafx.fxml;
@@ -9,7 +12,7 @@ module org.project {
     opens org.project to javafx.fxml;
     opens org.project.controller.admin_home to javafx.fxml;
     opens org.project.controller.admin_home.right_side to javafx.fxml;
-    opens org.project.model.dao.users to javafx.base;
+    opens org.project.model.dao.users;
     exports org.project;
     exports org.project.controller.admin_home;
     exports org.project.controller.admin_home.right_side;

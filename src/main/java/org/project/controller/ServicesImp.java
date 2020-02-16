@@ -12,8 +12,12 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class ServicesImp extends UnicastRemoteObject implements ServicesInterface {
     UsersDAO DAO;
@@ -38,7 +42,6 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public Boolean register(Users user) throws RemoteException, SQLException {
-        System.out.println(user + " is registered");
         return DAO.register(user);
     }
 
@@ -82,11 +85,16 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void sendMessage(Message newMsg, ChatRoom chatRoom) throws RemoteException {
+
+        chatRooms.forEach(chatRoom1 -> {
+            if (chatRoom1.getChatRoomId().equals(chatRoom.getChatRoomId())){
+                chatRoom1.getChatRoomMessage().add(newMsg);
+            }
+        });
         chatRoom.getUsers().forEach(user -> {
             clients.forEach(clientInterface -> {
                 try {
                     if (clientInterface.getUser().getId() == user.getId()) {
-                        System.out.println("sending message to " + clientInterface.getUser());
                         clientInterface.recieveMsg(newMsg , chatRoom);
                     }
                 } catch (RemoteException e) {
@@ -98,20 +106,19 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void registerClient(ClientInterface clientImp) throws RemoteException {
-        System.out.println("in server register client");
         clients.add(clientImp);
-        System.out.println("new Client is assigned" + clientImp.getUser());
     }
 
     @Override
     public ChatRoom requestChatRoom(ArrayList<Users> chatroomUsers) throws RemoteException {
-        System.out.println(chatroomUsers.get(1).getChatRooms() + "  aloooooooo");
-        ChatRoom chatRoomExist = checkChatRoomExist(chatroomUsers.get(1));
+        List<Integer> collect = chatroomUsers.stream().map(Users::getId).collect(Collectors.toList());
+        String chatRoomId = collect.stream().sorted().collect(Collectors.toList()).toString();
+        ChatRoom chatRoomExist = checkChatRoomExist(chatRoomId);
         if (chatRoomExist != null){
             return chatRoomExist;
         }
         chatRoomExist = new ChatRoom();
-        chatRoomExist.setChatRoomId(chatroomUsers.toString());
+        chatRoomExist.setChatRoomId(chatRoomId);
         chatRoomExist.setUsers(chatroomUsers);
         chatRooms.add(chatRoomExist);
         addChatRoomToAllClients(chatroomUsers , chatRoomExist);
@@ -133,21 +140,13 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
         });
     }
 
-    private ChatRoom checkChatRoomExist(Users chatroomUser) {
-        long count = 0;
+    private ChatRoom checkChatRoomExist(String chatroomUser) {
         for (ChatRoom chatRoom : chatRooms) {
-            System.out.println("IN THE LOOP");
-            System.out.println(chatroomUser.getChatRooms());
-            if (chatroomUser.getChatRooms().size() > 0){
-                count = chatroomUser.getChatRooms().parallelStream().map(ChatRoom::getChatRoomId).filter(s -> s.equals(chatRoom.getChatRoomId())).count();
-                System.out.println("count " + chatRoom.getChatRoomId());
-                if (count > 0) {
-                    System.out.println("chatRoom Already exists");
-                    return chatRoom;}
+            if (chatRoom.getChatRoomId().equals(chatroomUser)){
+               return chatRoom;
             }
 
         }
-        System.out.println(" rg3 b 5ofy 7onin");
         return null;
     }
 
@@ -161,7 +160,6 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
                 e.printStackTrace();
             }
         }
-        System.out.println("this user has no life " + user);
         return null;
     }
 }
