@@ -153,7 +153,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 " where f.user_id=? AND f.friend_status=?" +
                 " union" +
                 " SELECT u.id, u.name , u.phone_number, u.status" +
-                " FROM users u JOIN friends f on f.friend_id=u.id" +
+                " FROM users u JOIN friends f on f.user_id=u.id" +
                 " where f.friend_id=? AND f.friend_status=?;");) {
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Accepted));
