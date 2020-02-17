@@ -181,7 +181,12 @@ return flage[0];
     public boolean changeUserStatus(Users users, UserStatus userStatus) throws RemoteException {
         return  DAO.updateStatus(users, userStatus);
     }
+/*
+    @Override
+    public void notifyUser(Message newMsg, ChatRoom chatRoom) throws RemoteException {
 
+    }
+*/
     private void addChatRoomToAllClients(ArrayList<Users> chatroomUsers, ChatRoom chatRoomExist) {
         chatroomUsers.forEach(users -> {
             try {
