@@ -4,6 +4,7 @@ package org.project.controller.messages;
 import org.project.model.dao.users.Users;
 
 import java.io.Serializable;
+import java.security.PublicKey;
 
 public class Message implements Serializable {
 
@@ -16,6 +17,24 @@ public class Message implements Serializable {
     private String fontWeight;
     private Users user;
     private String chatId;
+    PublicKey publicKey;
+    String encryptedAESKeyString;
+
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(PublicKey publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    public String getEncryptedAESKeyString() {
+        return encryptedAESKeyString;
+    }
+
+    public void setEncryptedAESKeyString(String encryptedAESKeyString) {
+        this.encryptedAESKeyString = encryptedAESKeyString;
+    }
 
     public String getChatId() {
         return chatId;
