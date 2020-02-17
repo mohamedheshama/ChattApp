@@ -18,6 +18,132 @@ public interface ClientInterface extends Remote {
     void addChatRoom(ChatRoom chatRoomExist) throws RemoteException;
     // start hend
 
+    public boolean notifyrecieveFile(Message newMsg, ChatRoom chatRoom) throws RemoteException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //end hend
+
+    //start amr
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //end amr
+    //start iman
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // end imaN
+
+    //START SHIMAA
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //END SHIMAA
+    // start hend
+
 
 
 

@@ -1,5 +1,7 @@
 package org.project.controller;
 
+import com.healthmarketscience.rmiio.RemoteInputStream;
+import com.healthmarketscience.rmiio.RemoteInputStreamClient;
 import org.project.controller.messages.Message;
 import org.project.model.ChatRoom;
 import org.project.model.connection.MysqlConnection;
@@ -8,6 +10,14 @@ import org.project.model.dao.users.Users;
 import org.project.model.dao.users.UsersDAO;
 import org.project.model.dao.users.UsersDAOImpl;
 
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
@@ -18,6 +28,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ServicesImp extends UnicastRemoteObject implements ServicesInterface {
     UsersDAO DAO;
@@ -42,6 +53,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public Boolean register(Users user) throws RemoteException, SQLException {
+        System.out.println(user + " is registered");
         return DAO.register(user);
     }
 
@@ -65,23 +77,62 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     }
 @Override
-    public void notifyUser(Message newMsg, ChatRoom chatRoom) throws RemoteException{
+    public boolean fileNotifyUser(Message newMsg, ChatRoom chatRoom) throws RemoteException{
+     final boolean[] flage= {true};
     chatRoom.getUsers().forEach(user -> {
         clients.forEach(clientInterface -> {
             try {
                 if (clientInterface.getUser().getId() == user.getId()) {
                     System.out.println("sending file to " + clientInterface.getUser());
-                    clientInterface.recieveFile(newMsg , chatRoom);
+                 if(clientInterface.notifyrecieveFile(newMsg , chatRoom) ){
+                     flage[0]=true;
+                 }
+                 else {
+                     flage[0]=false;
+                 }
+
+
+
                 }
+
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
         });
     });
 
+return flage[0];
+
+    }
+
+    @Override
+    public void sendFile( Message newMsg, RemoteInputStream remoteFileData) throws IOException,RemoteException {
+        InputStream fileData= RemoteInputStreamClient.wrap(remoteFileData);
+        System.out.println("server 2 write");
+        ReadableByteChannel from = Channels.newChannel(fileData);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(fileData.available());
+
+        WritableByteChannel to = FileChannel.open(Paths.get("D:\\iti java\\xmlAPI\\firstTask\\'"+fileData+"'"), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
+        while (from.read(buffer) != -1)
+        {
+            buffer.flip();
+            while (buffer.hasRemaining()) {
+                System.out.println("server write");
+                to.write(buffer);
+            }
+            buffer.clear();
+        }
+        from.close();
+        to.close();
+        fileData.close();
+
 
 
     }
+
+
+
+
 
     @Override
     public void sendMessage(Message newMsg, ChatRoom chatRoom) throws RemoteException {
@@ -95,6 +146,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
             clients.forEach(clientInterface -> {
                 try {
                     if (clientInterface.getUser().getId() == user.getId()) {
+                        System.out.println("sending message to " + clientInterface.getUser());
                         clientInterface.recieveMsg(newMsg , chatRoom);
                     }
                 } catch (RemoteException e) {
@@ -129,7 +181,12 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     public boolean changeUserStatus(Users users, UserStatus userStatus) throws RemoteException {
         return  DAO.updateStatus(users, userStatus);
     }
+/*
+    @Override
+    public void notifyUser(Message newMsg, ChatRoom chatRoom) throws RemoteException {
 
+    }
+*/
     private void addChatRoomToAllClients(ArrayList<Users> chatroomUsers, ChatRoom chatRoomExist) {
         chatroomUsers.forEach(users -> {
             try {
@@ -160,6 +217,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
                 e.printStackTrace();
             }
         }
+        System.out.println("this user has no life " + user);
         return null;
     }
 }
