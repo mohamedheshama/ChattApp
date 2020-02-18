@@ -177,6 +177,17 @@ return flage[0];
         return chatRoomExist;
     }
 
+    private ChatRoom checkChatRoomExist(String chatroomUser) {
+        for (ChatRoom chatRoom : chatRooms) {
+            if (chatRoom.getChatRoomId().equals(chatroomUser)){
+                return chatRoom;
+            }
+
+        }
+        return null;
+    }
+
+
     @Override
     public boolean changeUserStatus(Users users, UserStatus userStatus) throws RemoteException {
         return  DAO.updateStatus(users, userStatus);
@@ -197,15 +208,7 @@ return flage[0];
         });
     }
 
-    private ChatRoom checkChatRoomExist(String chatroomUser) {
-        for (ChatRoom chatRoom : chatRooms) {
-            if (chatRoom.getChatRoomId().equals(chatroomUser)){
-               return chatRoom;
-            }
 
-        }
-        return null;
-    }
 
     public ClientInterface getClient(Users user) {
         for (ClientInterface clientInterface : clients) {
