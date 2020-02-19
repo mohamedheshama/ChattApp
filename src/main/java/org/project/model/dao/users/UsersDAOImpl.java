@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -445,5 +446,73 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             conn = connectionStrategy.getConnection();
             return conn;
 
+    }
+
+    @Override
+    public boolean addContactRequest(List<String> contactList, Users user) {
+        int friendId = 0;
+        int result = 0;
+        boolean added = false;
+        if (contactList.size() > 0) {
+            for (String phoneNo : contactList) {
+                friendId = getUserIDByPhoneNo(phoneNo);
+                String sql = "Insert into friends (friend_status,user_id,friend_id)" +
+                        " values (?,?,?)";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+                    preparedStatement.setString(1, "Pending");
+                    preparedStatement.setInt(2, user.getId());
+                    preparedStatement.setInt(3, friendId);
+                    result = preparedStatement.executeUpdate();
+                    if (result > 0) {
+                        added = true;
+                    }
+                } catch (SQLException e) {
+                    logger.warning(e.getSQLState());
+                    logger.warning(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
+        return added;
+    }
+
+    @Override
+    public List<String> getUsersList(int userId) {
+        List<String> usersList = new ArrayList<>();
+        ResultSet resultSet = null;
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select phone_number from users  where id != ALL (select friend_id from friends where user_id = ? And friend_status IN ('Accepted','Pending' ) ) And id != ?;")) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, userId);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                usersList.add(resultSet.getString(1));
+            }
+
+        } catch (SQLException ex) {
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
+            ex.printStackTrace();
+        }
+        return usersList;
+    }
+    @Override
+    public int getUserIDByPhoneNo(String phoneNo) {
+        int userId = 0;
+        ResultSet resultSet = null;
+        if (isUserExist(phoneNo)) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT id from users where phone_number=?;")) {
+                preparedStatement.setString(1, phoneNo);
+                resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    userId = resultSet.getInt(1);
+                }
+
+            } catch (SQLException ex) {
+                logger.warning(ex.getSQLState());
+                logger.warning(ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
+        return userId;
     }
 }

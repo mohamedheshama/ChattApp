@@ -8,6 +8,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public interface ServicesInterface extends Remote {
     public Users getUserData(String phoneNumber) throws RemoteException;
@@ -33,5 +34,11 @@ public interface ServicesInterface extends Remote {
     boolean declineRequest(Users currentUser, Users friend) throws RemoteException;
 
     public void notifyUpdatedNotifications(ArrayList<Users> users) throws RemoteException;
+
+    void addUsersToFriedNotifications(List<String> contactList, Users user) throws RemoteException;
+
+    List<String> getUsersList(int userId) throws RemoteException;
+
+    void notifyRequestedContacts(List<String> ContactList, Users user) throws RemoteException;
     // check if phone number exists, update online users
 }
