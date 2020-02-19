@@ -35,4 +35,8 @@ public interface UsersDAO {
     Map<String, Integer> getUsersByGender();
 
     Map<String, Integer> getUsersByStatus();
+
+    boolean acceptRequest(Users currentUser, Users friend);
+
+    boolean declineRequest(Users currentUser, Users friend);
 }

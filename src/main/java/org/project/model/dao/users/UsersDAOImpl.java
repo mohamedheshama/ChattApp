@@ -6,7 +6,6 @@ import org.project.exceptions.UserAlreadyExistException;
 import org.project.model.connection.ConnectionStrategy;
 import org.project.model.dao.friends.RequestStatus;
 
-import javax.xml.transform.stream.StreamResult;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -161,10 +160,12 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             ps.setInt(3, user.getId());
             ps.setString(4, String.valueOf(RequestStatus.Accepted));
             rs = ps.executeQuery();
+            user.getFriends().clear();
             while (rs.next()) {
                 Users friend = extractFriendFromResultSet(rs);
                 user.getFriends().add(friend);
             }
+            return user.getFriends();
 
         } catch (SQLException ex) {
             logger.warning(ex.getSQLState());
@@ -216,12 +217,14 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Pending));
             rs = ps.executeQuery();
+            user.getRequest_notifications().clear();
             while (rs.next()) {
                 Users friend =  extractFriendFromResultSet(rs);
 
                 //friend.setFriend(extractFriendFromResultSet(rs));
                 user.getRequest_notifications().add(friend);
             }
+            return user.getRequest_notifications();
 
         } catch (SQLException ex) {
             logger.warning(ex.getSQLState());
@@ -301,16 +304,28 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
     @Override
     public boolean updateStatus(Users user, UserStatus status) {
-        try (PreparedStatement ps = connection.prepareStatement("update users set Status = '?' where id = ?;")) {
-            ps.setString(1, String.valueOf(status));
-            ps.setInt(2, user.getId());
-            if (ps.executeUpdate() > 0)
-                return true;
+        ResultSet rs = null;
+        try (PreparedStatement ps = connection.prepareStatement("select id,status from users where users.id=?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
+            ps.setInt(1, user.getId());
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                rs.updateString("status", String.valueOf(status));
+                rs.updateRow();
+            }
+            return true;
         } catch (SQLException e) {
             logger.warning(e.getSQLState());
             logger.warning(e.getMessage());
             e.printStackTrace();
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+
+
         return false;
     }
 
@@ -385,6 +400,44 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         }
         return usersNumByStatusmap;
     }
+
+    @Override
+    public boolean acceptRequest(Users currentUser, Users friend) {
+        try (PreparedStatement ps = connection.prepareStatement("UPDATE friends SET friend_status='Accepted' WHERE user_id=? AND friend_id=?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
+            ps.setInt(1, friend.getId());
+            ps.setInt(2,currentUser.getId());
+            ps.executeUpdate();
+            currentUser.setRequest_notifications(getUserNotifications(currentUser));
+            currentUser.setFriends(getUserFriends(currentUser));
+            System.out.println("done Accepted");
+
+            return true;
+        } catch (SQLException e) {
+            logger.warning(e.getSQLState());
+            logger.warning(e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean declineRequest(Users currentUser, Users friend) {
+        try (PreparedStatement ps = connection.prepareStatement("DELETE from friends WHERE friend_status='Pending' AND user_id=? AND friend_id=?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
+            ps.setInt(1, friend.getId());
+            ps.setInt(2,currentUser.getId());
+            ps.executeUpdate();
+            currentUser.setRequest_notifications(getUserNotifications(currentUser));
+            System.out.println("done Declined");
+            return true;
+        } catch (SQLException e) {
+            logger.warning(e.getSQLState());
+            logger.warning(e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+
+    }
+
 
     @Override
     public Connection getConnection() throws SQLException {
