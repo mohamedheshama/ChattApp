@@ -21,11 +21,11 @@ public class Main {
         ConnectionStrategy connectionStrategy = MysqlConnection.getInstance();
         UsersDAOImpl usersDAO = new UsersDAOImpl(connectionStrategy);
         //Map<String,Integer> map = usersDAO.getUsersNumByCountry();
-        List<String> contactListViewCell = usersDAO.getUsersList(1);
+        //List<String> contactListViewCell = usersDAO.getUsersList(1);
 
-        for(String string: contactListViewCell){
+        /*for(String string: contactListViewCell){
             System.out.println("kkkkkkkkkkk"+string);
-        }
+        }*/
 
         // Users user = usersDAO.login("0102354663");
         //ystem.out.println(user);

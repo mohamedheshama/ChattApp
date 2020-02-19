@@ -1,20 +1,13 @@
 package org.project.controller;
 
-import javafx.collections.ObservableList;
-import javafx.scene.control.ListView;
-import com.healthmarketscience.rmiio.RemoteInputStream;
 import org.project.controller.messages.Message;
 import org.project.model.ChatRoom;
-import org.project.model.dao.users.UserStatus;
 import org.project.model.dao.users.Users;
 
-import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public interface ServicesInterface extends Remote {
     public Users getUserData(String phoneNumber) throws RemoteException;
@@ -23,9 +16,9 @@ public interface ServicesInterface extends Remote {
 
     public Boolean checkUserLogin(String phoneNumber, String password) throws RemoteException;
 
-    public ArrayList<Users> getFriends(String phoneNumber) throws RemoteException;
+    public ArrayList<Users> getFriends(Users users) throws RemoteException;
 
-    public ArrayList<Users> getNotifications(String phoneNumber) throws RemoteException;
+    public ArrayList<Users> getNotifications(Users users) throws RemoteException;
 
     public void notifyUpdate(Users users) throws RemoteException;
 
@@ -35,107 +28,10 @@ public interface ServicesInterface extends Remote {
 
     public ChatRoom requestChatRoom(ArrayList<Users> chatroomUsers) throws RemoteException;
 
-    public boolean changeUserStatus(Users user, UserStatus userStatus) throws RemoteException;
-    //public void notifyUser(Message newMsg, ChatRoom chatRoom) throws RemoteException;
-    public boolean fileNotifyUser(Message newMsg, ChatRoom chatRoom) throws RemoteException;
-    public void sendFile( Message newMsg, RemoteInputStream remoteFileData) throws IOException ,RemoteException;
+    boolean acceptRequest(Users currentUser, Users friend) throws RemoteException;
+
+    boolean declineRequest(Users currentUser, Users friend) throws RemoteException;
+
+    public void notifyUpdatedNotifications(ArrayList<Users> users) throws RemoteException;
     // check if phone number exists, update online users
-    // start hend
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //end hend
-
-    //start amr
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //end amr
-    //start iman
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // end imaN
-
-    //START SHIMAA
-    void addUsersToFriedNotifications(List<String> contactList, Users user) throws RemoteException;
-
-    List<String> getUsersList(int userId) throws RemoteException;
-    void notifyRequestedContacts(List<String> ContactList, Users user) throws RemoteException;
-
-    //END SHIMAA
 }
