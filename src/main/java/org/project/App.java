@@ -42,12 +42,23 @@ public class App extends Application {
         return fxmlLoader.load();
     }
 
+    private static void initializeRMI(){
+        try {
+            Registry reg = LocateRegistry.createRegistry(1264);
+            System.setProperty("java.rmi.server.hostname", "127.0.0.1"); // Uses the loopback address, 127.0.0.1, if yo
+            ServicesInterface servicesImp = new ServicesImp();
+            reg.rebind("ServerServices", servicesImp);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     public static void main(String[] args) {
 
         List<String> collect = Arrays.asList(Locale.getAvailableLocales()).stream().map(Locale::getDisplayCountry).filter(s -> !s.isEmpty()).sorted().collect(Collectors.toList());
         System.out.println(collect);
+        //initializeRMI();
         launch();
 
     }

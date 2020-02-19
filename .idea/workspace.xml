@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="94740d80-1ca1-49fa-a0d1-ca6be900e862" name="Default Changelist" comment="done P2P chatting">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+    <list default="true" id="94740d80-1ca1-49fa-a0d1-ca6be900e862" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SpeakApplicationServer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/SpeakApplicationServer.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/project/controller/messages/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/project/controller/messages/Message.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/project/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/project/App.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/module-info.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/org/project/App.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/org/project/App.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/org/project/model/connection/MysqlConnection.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/org/project/model/connection/MysqlConnection.class" afterDir="false" />
@@ -40,7 +38,6 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="SONARLINT_PRECOMMIT_ANALYSIS" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="F:/ITI/FX/material-dashboard-fx-master/material-dashboard-fx-master" />
@@ -65,15 +62,10 @@
       <recent name="D:\ITI_Materials\SpeakApplicationProject\SpeakApplicationServer\src\main\resources\org\project" />
     </key>
   </component>
-  <component name="RunAnythingCache">
-    <option name="myCommands">
-      <command value="mvn clean install" />
-    </option>
-  </component>
   <component name="RunManager" selected="Application.App">
     <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.project.App" />
-      <module name="SpeackApplicationServer.git" />
+      <module name="SpeackApplicationServer" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="org.project.*" />
@@ -85,8 +77,8 @@
       </method>
     </configuration>
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.project.App" />
-      <module name="SpeackApplicationServer.git" />
+      <option name="MAIN_CLASS_NAME" value="org.project.model.dao.Main" />
+      <module name="SpeackApplicationServer" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="org.project.model.dao.*" />
@@ -143,49 +135,6 @@
       <workItem from="1581002284742" duration="1783000" />
       <workItem from="1581429390875" duration="1878000" />
     </task>
-    <task id="LOCAL-00001" summary="sending message to user and notify him">
-      <created>1581752115348</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1581752115349</updated>
-    </task>
-    <task id="LOCAL-00002" summary="begin forwading chatrooms">
-      <created>1581758318378</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1581758318378</updated>
-    </task>
-    <task id="LOCAL-00003" summary="finalizing chatRoom registration">
-      <created>1581785730751</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1581785730751</updated>
-    </task>
-    <task id="LOCAL-00004" summary="done P2P chatting">
-      <created>1581799061566</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1581799061566</updated>
-    </task>
-    <task id="LOCAL-00005" summary="TASK DISTRIBUTION">
-      <created>1581869723352</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1581869723352</updated>
-    </task>
-    <task id="LOCAL-00006" summary="retrieving chat messages within the current session">
-      <created>1581892614513</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1581892614513</updated>
-    </task>
-    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -204,108 +153,54 @@
       </map>
     </option>
   </component>
-  <component name="VcsManagerConfiguration">
-    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="sending message to user and notify him" />
-    <MESSAGE value="begin forwading chatrooms" />
-    <MESSAGE value="finalizing chatRoom registration" />
-    <MESSAGE value="done P2P chatting" />
-    <MESSAGE value="TASK DISTRIBUTION" />
-    <MESSAGE value="retrieving chat messages within the current session" />
-    <option name="LAST_COMMIT_MESSAGE" value="retrieving chat messages within the current session" />
-  </component>
   <component name="WindowStateProjectService">
-    <state x="485" y="70" key="#App" timestamp="1581891472818">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state x="409" y="33" key="#App" timestamp="1582040269310">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="485" y="70" key="#App/0.0.1536.824@0.0.1536.824" timestamp="1581891472818" />
-    <state x="485" y="70" key="#Main" timestamp="1581701137098">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="485" y="70" key="#Main/0.0.1536.824@0.0.1536.824" timestamp="1581701137098" />
-    <state x="574" y="121" key="#com.intellij.ide.util.MemberChooser" timestamp="1581866547309">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="574" y="121" key="#com.intellij.ide.util.MemberChooser/0.0.1536.824@0.0.1536.824" timestamp="1581866547309" />
-    <state x="498" y="195" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1581701133678">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="498" y="195" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1536.824@0.0.1536.824" timestamp="1581701133678" />
-    <state x="310" y="6" key="CommitChangelistDialog2" timestamp="1581892611322">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="310" y="6" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1581892611322" />
-    <state x="147" y="65" key="DiffContextDialog" timestamp="1581869341434">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="147" y="65" key="DiffContextDialog/0.0.1536.824@0.0.1536.824" timestamp="1581869341434" />
+    <state x="409" y="33" key="#App/0.0.1366.728@0.0.1366.728" timestamp="1582040269310" />
     <state x="549" y="167" key="FileChooserDialogImpl" timestamp="1580669859713">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1580669859713" />
-    <state width="1493" height="244" key="GridCell.Tab.0.bottom" timestamp="1581965118755">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1323" height="326" key="GridCell.Tab.0.bottom" timestamp="1582040403601">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1493" height="244" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1581965118755" />
-    <state width="1493" height="244" key="GridCell.Tab.0.center" timestamp="1581965118755">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1323" height="326" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1582040403601" />
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1580669757041" />
+    <state width="1323" height="326" key="GridCell.Tab.0.center" timestamp="1582040403601">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1493" height="244" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1581965118755" />
-    <state width="1493" height="244" key="GridCell.Tab.0.left" timestamp="1581965118755">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1323" height="326" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1582040403601" />
+    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1580669757041" />
+    <state width="1323" height="326" key="GridCell.Tab.0.left" timestamp="1582040403600">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1493" height="244" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1581965118755" />
-    <state width="1493" height="244" key="GridCell.Tab.0.right" timestamp="1581965118755">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1323" height="326" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1582040403600" />
+    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1580669757041" />
+    <state width="1323" height="326" key="GridCell.Tab.0.right" timestamp="1582040403601">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1493" height="244" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1581965118755" />
-    <state x="147" y="65" key="MergeDialog" timestamp="1581869502189">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1323" height="326" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1582040403601" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1580669757041" />
+    <state x="395" y="82" key="MultipleFileMergeDialog" timestamp="1582038001500">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="147" y="65" key="MergeDialog/0.0.1536.824@0.0.1536.824" timestamp="1581869502189" />
-    <state x="481" y="128" key="MultipleFileMergeDialog" timestamp="1581869502213">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="481" y="128" key="MultipleFileMergeDialog/0.0.1536.824@0.0.1536.824" timestamp="1581869502213" />
+    <state x="395" y="82" key="MultipleFileMergeDialog/0.0.1366.728@0.0.1366.728" timestamp="1582038001500" />
     <state x="249" y="0" key="SettingsEditor" timestamp="1580669749838">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="249" y="0" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1580669749838" />
-    <state x="361" y="145" key="Vcs.Push.Dialog.v2" timestamp="1581892624531">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state x="494" y="284" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1582040660391">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="361" y="145" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1581892624531" />
-    <state x="465" y="236" key="com.intellij.ide.util.TipDialog" timestamp="1581935964627">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state x="494" y="284" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1366.728@0.0.1366.728" timestamp="1582040660391" />
+    <state x="371" y="168" key="git4idea.merge.GitPullDialog" timestamp="1582040648997">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="465" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1581935964627" />
-    <state x="578" y="329" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1581869464290">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state x="371" y="168" key="git4idea.merge.GitPullDialog/0.0.1366.728@0.0.1366.728" timestamp="1582040648997" />
+    <state x="339" y="162" key="run.anything.popup" timestamp="1582040385185">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="578" y="329" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.824@0.0.1536.824" timestamp="1581869464290" />
-    <state x="458" y="203" key="git4idea.merge.GitPullDialog" timestamp="1581869457272">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="458" y="203" key="git4idea.merge.GitPullDialog/0.0.1536.824@0.0.1536.824" timestamp="1581869457272" />
-    <state x="209" y="114" key="new project wizard" timestamp="1581936016787">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="209" y="114" key="new project wizard/0.0.1536.824@0.0.1536.824" timestamp="1581936016787" />
-    <state x="425" y="187" width="672" height="677" key="run.anything.popup" timestamp="1581701400080">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="425" y="187" width="672" height="677" key="run.anything.popup/0.0.1536.824@0.0.1536.824" timestamp="1581701400080" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/project/App.java</url>
-          <line>29</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <state x="339" y="162" key="run.anything.popup/0.0.1366.728@0.0.1366.728" timestamp="1582040385185" />
   </component>
 </project>
