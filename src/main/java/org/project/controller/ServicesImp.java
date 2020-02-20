@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
@@ -172,4 +173,40 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
 
     }
+    @Override
+    public void addUsersToFriedNotifications (List< String > contactList, Users user) throws
+            RemoteException {
+        DAO.addContactRequest(contactList, user);
+
+    }
+
+    @Override
+    public List<String> getUsersList (int userId) throws RemoteException {
+        return DAO.getUsersList(userId);
+    }
+
+    @Override
+    public void notifyRequestedContacts (List < String > ContactList, Users user) throws RemoteException
+    {
+        ContactList.forEach(contact -> {
+            clients.forEach(clientInterface -> {
+                try {
+                    if (clientInterface.getUser().getId() == user.getId()) {
+                        System.out.println("sending notification to " + clientInterface.getUser());
+                        clientInterface.recieveContactRequest(user);
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+
+    }
 }
+
+
+
+
+
+
+
