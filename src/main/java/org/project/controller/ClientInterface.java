@@ -240,7 +240,7 @@ public interface ClientInterface extends Remote {
     //START SHIMAA
 
 
-    void recieveContactRequest(Users user) throws  RemoteException;;
+    void recieveContactRequest(Users user) throws  RemoteException;
 
 
     //END SHIMAA

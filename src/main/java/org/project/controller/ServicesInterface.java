@@ -41,4 +41,11 @@ public interface ServicesInterface extends Remote {
 
     void notifyRequestedContacts(List<String> ContactList, Users user) throws RemoteException;
     // check if phone number exists, update online users
+    //START SHIMAA
+    void addUsersToFriedNotifications(List<String> contactList, Users user) throws RemoteException;
+
+    List<String> getUsersList(int userId) throws RemoteException;
+    void notifyRequestedContacts(List<String> ContactList, Users user) throws RemoteException;
+
+    //END SHIMAA
 }
