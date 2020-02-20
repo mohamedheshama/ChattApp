@@ -6,6 +6,7 @@ import org.project.exceptions.UserAlreadyExistException;
 import org.project.model.connection.ConnectionStrategy;
 import org.project.model.dao.friends.RequestStatus;
 
+import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,7 +34,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public Users login(String phoneNumber) {
         Users user;
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status,picture FROM users WHERE phone_number=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
             ps.setString(1, phoneNumber);
             rs = ps.executeQuery();
             if (rs.next()) {
@@ -85,8 +86,17 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public boolean updateUser(Users user) {
         // make sure no empty mandatory fields
         // make sure input is validated
+        ByteArrayInputStream bais=null;
+        try {
+            bais = new ByteArrayInputStream(user.getDisplayPicture());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE users.id=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
+        System.out.println(user.getName());
+        System.out.println(bais);
+
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status,picture FROM users WHERE users.id=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
             ps.setInt(1, user.getId());
             rs = ps.executeQuery();
             if (rs.next()) {
@@ -100,6 +110,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 rs.updateString("bio", user.getBio());
                 rs.updateString("status", String.valueOf(user.getStatus()));
                 rs.updateRow();
+                updatePicture(user);
                 return true;
             }
 
@@ -118,6 +129,25 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
         return false;
     }
+    public void updatePicture(Users user){
+        ByteArrayInputStream bais =null;
+        PreparedStatement pstmt = null;
+        int rowsAdded = -0;
+        try {
+            bais=new ByteArrayInputStream(user.getDisplayPicture());
+            String SQL = "UPDATE users SET picture = ? WHERE  id= ?";
+            pstmt = connection.prepareStatement(SQL);
+            pstmt.setBinaryStream(1, bais, user.getDisplayPicture().length);
+            pstmt.setInt(2,user.getId());
+            rowsAdded = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (rowsAdded > 0) {
+            System.out.println("user was inserted successfully!");
+        }
+    }
+
 
     @Override
     public boolean deleteUSer(Users user) {
@@ -149,11 +179,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     @Override
     public ArrayList<Users> getUserFriends(Users user) {
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status" +
+        try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status,u.picture" +
                 " FROM users u JOIN friends f on f.friend_id=u.id" +
                 " where f.user_id=? AND f.friend_status=?" +
                 " union" +
-                " SELECT u.id, u.name , u.phone_number, u.status" +
+                " SELECT u.id, u.name , u.phone_number, u.status,u.picture" +
                 " FROM users u JOIN friends f on f.user_id=u.id" +
                 " where f.friend_id=? AND f.friend_status=?;");) {
             ps.setInt(1, user.getId());
@@ -214,13 +244,14 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     @Override
     public ArrayList<Users> getUserNotifications(Users user) {
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("select u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on u.id=f.user_id where f.friend_id=? AND f.friend_status=? ;");) {
+        try (PreparedStatement ps = connection.prepareStatement("select u.id, u.name , u.phone_number, u.status, u.picture FROM users u JOIN friends f on u.id=f.user_id where f.friend_id=? AND f.friend_status=? ;");) {
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Pending));
             rs = ps.executeQuery();
             user.getRequest_notifications().clear();
             while (rs.next()) {
                 Users friend =  extractFriendFromResultSet(rs);
+                System.out.println(friend);
 
                 //friend.setFriend(extractFriendFromResultSet(rs));
                 user.getRequest_notifications().add(friend);
@@ -254,7 +285,9 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         user.setDateOfBirth(rs.getDate("date_of_birth"));
         user.setBio(rs.getString("bio"));
         user.setStatus(UserStatus.valueOf(rs.getString("status")));
-        user.setPicture(rs.getBlob("picture"));
+        user.setDisplayPicture(rs.getBytes("picture"));
+        System.out.println("bytes"+rs.getBytes("picture"));
+        System.out.println("picture"+user.getDisplayPicture());
         return user;
     }
 
@@ -264,6 +297,9 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         user.setPhoneNumber(rs.getString("phone_number"));
         user.setName(rs.getString("name"));
         user.setStatus(UserStatus.valueOf(rs.getString("status")));
+        user.setDisplayPicture(rs.getBytes("picture"));
+
+        System.out.println("inside get frinds bytes"+user.getDisplayPicture());
 
         return user;
     }
