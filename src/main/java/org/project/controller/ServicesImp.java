@@ -96,7 +96,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void sendFile(String newMsg, RemoteInputStream remoteFileData, ChatRoom chatRoom, int userSendFileId) throws IOException,RemoteException {
-
+        System.out.println("in server file To send th fucken file");
         chatRoom.getUsers().forEach(user -> {
             if(user.getId()!=userSendFileId){
                 InputStream fileData= null;
@@ -117,7 +117,8 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
                 WritableByteChannel to = null;
                 try {
-                    to = FileChannel.open(Paths.get("D:\\iti java\\xmlAPI\\firstTask\\"+newMsg), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
+                    String home = System.getProperty("user.home");
+                    to = FileChannel.open(Paths.get(home +"/Downloads/"+ newMsg), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
