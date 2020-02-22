@@ -19,7 +19,7 @@ public class Users implements Serializable {
     private Date dateOfBirth;
     private String bio;
     transient private Blob picture;
-    transient private byte[] displayPicture;
+    private byte[] displayPicture;
     private UserStatus status;
     private ArrayList<Users> friends = new ArrayList<>();
     private ArrayList<Users> request_notifications = new ArrayList<>();
@@ -111,7 +111,6 @@ public class Users implements Serializable {
     }
 
     public byte[] getDisplayPicture() throws SQLException {
-        byte displayPicture[] = picture.getBytes(1, (int) picture.length());
         return displayPicture;
     }
 
@@ -121,6 +120,10 @@ public class Users implements Serializable {
 
     public void setRequest_notifications(ArrayList<Users> request_notifications) {
         this.request_notifications = request_notifications;
+    }
+
+    public void setDisplayPicture(byte[] displayPicture) {
+        this.displayPicture = displayPicture;
     }
 
     @Override

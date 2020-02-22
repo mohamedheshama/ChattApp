@@ -5,6 +5,7 @@ import org.project.exceptions.UserAlreadyExistException;
 //import org.project.model.dao.friends.Friends;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 //import org.project.model.dao.friends.Friends;
@@ -39,4 +40,10 @@ public interface UsersDAO {
     boolean acceptRequest(Users currentUser, Users friend);
 
     boolean declineRequest(Users currentUser, Users friend);
+
+    int getUserIDByPhoneNo(String phoneNo);
+
+    boolean addContactRequest(List<String> contactList, Users user);
+
+    List<String> getUsersList(int userId);
 }
