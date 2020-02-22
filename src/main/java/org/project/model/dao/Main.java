@@ -1,6 +1,8 @@
 package org.project.model.dao;
 
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.project.model.connection.ConnectionStrategy;
 import org.project.model.connection.MysqlConnection;
 import org.project.model.dao.users.Gender;
@@ -9,17 +11,22 @@ import org.project.model.dao.users.Users;
 import org.project.model.dao.users.UsersDAOImpl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
         ConnectionStrategy connectionStrategy = MysqlConnection.getInstance();
         UsersDAOImpl usersDAO = new UsersDAOImpl(connectionStrategy);
-        Map<String,Integer> map = usersDAO.getUsersNumByCountry();
-          for(Map.Entry m:map.entrySet()){
-            System.out.println(m.getKey()+" "+m.getValue());
-          }
+        //Map<String,Integer> map = usersDAO.getUsersNumByCountry();
+        //List<String> contactListViewCell = usersDAO.getUsersList(1);
+
+        /*for(String string: contactListViewCell){
+            System.out.println("kkkkkkkkkkk"+string);
+        }*/
+
         // Users user = usersDAO.login("0102354663");
         //ystem.out.println(user);
 

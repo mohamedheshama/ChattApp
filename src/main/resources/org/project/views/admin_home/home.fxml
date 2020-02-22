@@ -1,196 +1,171 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.*?>
 <?import javafx.geometry.*?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="720.0" minWidth="1068.0" onMouseDragged="#draged"
-            onMousePressed="#pressed" style="-fx-background-color: transparent;"
-            stylesheets="@../../styles/home/fixed_content.css" xmlns="http://javafx.com/javafx/10.0.2-internal"
-            fx:controller="org.project.controller.admin_home.MainAdminController">
+
+<AnchorPane minHeight="720.0" minWidth="1068.0" onMouseDragged="#draged" onMousePressed="#pressed" style="-fx-background-color: transparent;" stylesheets="@../../styles/home/fixed_content.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.project.controller.admin_home.MainAdminController">
    <children>
-      <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0"
-            AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox alignment="TOP_RIGHT" prefHeight="18.0" prefWidth="1068.0" style="-fx-background-color: #E3E3E3;">
                <children>
-                  <ImageView fitHeight="32.0" fitWidth="39.0" onMouseClicked="#handleMinimize" pickOnBounds="true"
-                             preserveRatio="true" styleClass="barBtn">
+                  <ImageView fitHeight="32.0" fitWidth="39.0" onMouseClicked="#handleMinimize" pickOnBounds="true" preserveRatio="true" styleClass="barBtn">
                      <HBox.margin>
-                        <Insets/>
+                        <Insets />
                      </HBox.margin>
                      <image>
-                        <Image url="@../../images/minimize-icon.png"/>
+                        <Image url="@../../images/minimize-icon.png" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="32.0" fitWidth="39.0" onMouseClicked="#handleMaximize" pickOnBounds="true"
-                             preserveRatio="true" styleClass="barBtn">
+                  <ImageView fitHeight="32.0" fitWidth="39.0" onMouseClicked="#handleMaximize" pickOnBounds="true" preserveRatio="true" styleClass="barBtn">
                      <image>
-                        <Image url="@../../images/maximize-icon.png"/>
+                        <Image url="@../../images/maximize-icon.png" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="32.0" fitWidth="39.0" onMouseClicked="#handleClose" pickOnBounds="true"
-                             preserveRatio="true" styleClass="barBtn" HBox.hgrow="ALWAYS">
+                  <ImageView fitHeight="32.0" fitWidth="39.0" onMouseClicked="#handleClose" pickOnBounds="true" preserveRatio="true" styleClass="barBtn" HBox.hgrow="ALWAYS">
                      <image>
-                        <Image url="@../../images/close-icon.png"/>
+                        <Image url="@../../images/close-icon.png" />
                      </image>
                   </ImageView>
                </children>
             </HBox>
-            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="100.0"
-                  style="-fx-background-color: #3e3e3e;">
+            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="100.0" style="-fx-background-color: #3e3e3e;">
                <children>
-                  <HBox alignment="CENTER" prefWidth="200.0"
-                        style="-fx-border-color: white; -fx-border-width: 0px 2px 0px 2px; -fx-background-color: #0099cc;">
+                  <HBox alignment="CENTER" prefWidth="200.0" style="-fx-border-color: white; -fx-border-width: 0px 2px 0px 2px; -fx-background-color: #0099cc;">
                      <children>
                         <ImageView fitHeight="25.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                            <HBox.margin>
-                              <Insets right="3.0"/>
+                              <Insets right="3.0" />
                            </HBox.margin>
                            <image>
-                              <Image url="@../../images/admin-icon.png"/>
+                              <Image url="@../../images/admin-icon.png" />
                            </image>
                         </ImageView>
                         <Label style="-fx-text-fill: white; -fx-font-size: 2em;" text="Admin">
                            <font>
-                              <Font name="Arial Bold" size="11.0"/>
+                              <Font name="Arial Bold" size="11.0" />
                            </font>
                         </Label>
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Button fx:id="startServiceBtn" mnemonicParsing="false" onAction="#handleStartService"
-                                prefHeight="58.0" prefWidth="200.0"
-                                style="-fx-background-color: aliceBlue; -fx-background-radius: 20;" text="Start Service"
-                                HBox.hgrow="ALWAYS">
+                        <Button fx:id="startServiceBtn" mnemonicParsing="false" onAction="#handleStartService" prefHeight="58.0" prefWidth="200.0" style="-fx-background-color: aliceBlue; -fx-background-radius: 20;" text="Start Service" HBox.hgrow="ALWAYS">
                            <HBox.margin>
-                              <Insets right="50.0"/>
+                              <Insets right="50.0" />
                            </HBox.margin>
                            <font>
-                              <Font name="System Bold" size="18.0"/>
+                              <Font name="System Bold" size="18.0" />
                            </font>
                         </Button>
-                        <Button fx:id="stopServiceBtn" mnemonicParsing="false" onAction="#handleStopService"
-                                prefHeight="58.0" prefWidth="200.0"
-                                style="-fx-background-color: aliceBlue; -fx-background-radius: 20;" text="Stop Service"
-                                HBox.hgrow="ALWAYS">
+                        <Button fx:id="stopServiceBtn" disable="true" mnemonicParsing="false" onAction="#handleStopService" prefHeight="58.0" prefWidth="200.0" style="-fx-background-color: aliceBlue; -fx-background-radius: 20;" text="Service Stoped" HBox.hgrow="ALWAYS">
                            <font>
-                              <Font name="System Bold" size="18.0"/>
+                              <Font name="System Bold" size="18.0" />
                            </font>
                         </Button>
-                        <Button mnemonicParsing="false" opacity="0.0"/>
+                        <Button mnemonicParsing="false" opacity="0.0" />
                      </children>
                   </HBox>
                </children>
                <VBox.margin>
-                  <Insets/>
+                  <Insets />
                </VBox.margin>
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox maxWidth="-Infinity" prefWidth="200.0"
-                        style="-fx-background-color: #3e3e3e; -fx-border-color: white; -fx-border-width: 0px 2px 0px 2px;">
+                  <VBox maxWidth="-Infinity" prefWidth="200.0" style="-fx-background-color: #3e3e3e; -fx-border-color: white; -fx-border-width: 0px 2px 0px 2px;">
                      <children>
-                        <HBox id="dashboardBtn" fx:id="dashboardHbox" prefHeight="62.0" prefWidth="195.0"
-                              styleClass="navHbox">
+                        <HBox id="dashboardBtn" fx:id="dashboardHbox" prefHeight="62.0" prefWidth="195.0" styleClass="navHbox">
                            <children>
                               <ImageView fitHeight="23.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../images/dashboard-icon.png"/>
+                                    <Image url="@../../images/dashboard-icon.png" />
                                  </image>
                                  <HBox.margin>
-                                    <Insets left="5.0" top="13.0"/>
+                                    <Insets left="5.0" top="13.0" />
                                  </HBox.margin>
                               </ImageView>
-                              <JFXButton alignment="BASELINE_LEFT" maxWidth="-Infinity" mnemonicParsing="false"
-                                         onAction="#handleSwitchDashboard" prefHeight="53.0" prefWidth="168.0"
-                                         styleClass="navBtn" text="Dashboard" textFill="WHITE" HBox.hgrow="ALWAYS">
+                              <JFXButton alignment="BASELINE_LEFT" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleSwitchDashboard" prefHeight="53.0" prefWidth="168.0" styleClass="navBtn" text="Dashboard" textFill="WHITE" HBox.hgrow="ALWAYS">
                                  <font>
-                                    <Font name="System Bold" size="18.0"/>
+                                    <Font name="System Bold" size="18.0" />
                                  </font>
                               </JFXButton>
                            </children>
                            <VBox.margin>
-                              <Insets/>
+                              <Insets />
                            </VBox.margin>
                            <padding>
-                              <Insets bottom="5.0" left="1.0" right="5.0" top="5.0"/>
+                              <Insets bottom="5.0" left="1.0" right="5.0" top="5.0" />
                            </padding>
                         </HBox>
                         <HBox fx:id="usersHbox" prefHeight="62.0" prefWidth="195.0" styleClass="navHbox">
                            <children>
                               <ImageView fitHeight="23.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../images/icon-users.png"/>
+                                    <Image url="@../../images/icon-users.png" />
                                  </image>
                                  <HBox.margin>
-                                    <Insets left="5.0" top="17.0"/>
+                                    <Insets left="5.0" top="17.0" />
                                  </HBox.margin>
                               </ImageView>
-                              <JFXButton alignment="BASELINE_LEFT" maxWidth="-Infinity" mnemonicParsing="false"
-                                         onAction="#handleSwitchUsers" prefHeight="53.0" prefWidth="153.0"
-                                         styleClass="navBtn" text="Users" textFill="WHITE">
+                              <JFXButton alignment="BASELINE_LEFT" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleSwitchUsers" prefHeight="53.0" prefWidth="153.0" styleClass="navBtn" text="Users" textFill="WHITE">
                                  <font>
-                                    <Font name="System Bold" size="18.0"/>
+                                    <Font name="System Bold" size="18.0" />
                                  </font>
                               </JFXButton>
                            </children>
                            <VBox.margin>
-                              <Insets/>
+                              <Insets />
                            </VBox.margin>
                            <padding>
-                              <Insets bottom="5.0" left="1.0" right="5.0" top="5.0"/>
+                              <Insets bottom="5.0" left="1.0" right="5.0" top="5.0" />
                            </padding>
                         </HBox>
                         <HBox fx:id="announcementHbox" prefHeight="62.0" prefWidth="195.0" styleClass="navHbox">
                            <children>
                               <ImageView fitHeight="23.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../images/icon-announcement.png"/>
+                                    <Image url="@../../images/icon-announcement.png" />
                                  </image>
                                  <HBox.margin>
-                                    <Insets left="5.0" top="13.0"/>
+                                    <Insets left="5.0" top="13.0" />
                                  </HBox.margin>
                               </ImageView>
-                              <JFXButton alignment="BASELINE_LEFT" maxWidth="-Infinity" mnemonicParsing="false"
-                                         onAction="#handleSwitchAnnouncement" prefHeight="53.0" prefWidth="160.0"
-                                         styleClass="navBtn" text="Announcement" textFill="WHITE">
+                              <JFXButton alignment="BASELINE_LEFT" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleSwitchAnnouncement" prefHeight="53.0" prefWidth="160.0" styleClass="navBtn" text="Announcement" textFill="WHITE">
                                  <font>
-                                    <Font name="System Bold" size="18.0"/>
+                                    <Font name="System Bold" size="18.0" />
                                  </font>
                               </JFXButton>
                            </children>
                            <VBox.margin>
-                              <Insets/>
+                              <Insets />
                            </VBox.margin>
                            <padding>
-                              <Insets bottom="5.0" left="1.0" right="5.0" top="5.0"/>
+                              <Insets bottom="5.0" left="1.0" right="5.0" top="5.0" />
                            </padding>
 
                         </HBox>
 
                      </children>
                      <padding>
-                        <Insets top="20.0"/>
+                        <Insets top="20.0" />
                      </padding>
                   </VBox>
                </children>
             </HBox>
          </children>
          <effect>
-            <DropShadow/>
+            <DropShadow />
          </effect>
       </VBox>
-      <VBox fx:id="rightContentPane" alignment="CENTER" prefHeight="200.0" prefWidth="100.0"
-            AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0"
-            AnchorPane.topAnchor="138.0"/>
+      <VBox fx:id="rightContentPane" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="138.0" />
    </children>
    <opaqueInsets>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
    </opaqueInsets>
 </AnchorPane>

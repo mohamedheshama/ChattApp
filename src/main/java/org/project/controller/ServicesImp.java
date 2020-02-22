@@ -1,7 +1,5 @@
 package org.project.controller;
 
-import com.healthmarketscience.rmiio.RemoteInputStream;
-import com.healthmarketscience.rmiio.RemoteInputStreamClient;
 import org.project.controller.messages.Message;
 import org.project.model.ChatRoom;
 import org.project.model.connection.MysqlConnection;
@@ -63,17 +61,18 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
-    public ArrayList<Users> getFriends(String phoneNumber) throws RemoteException {
-        return null;
+    public ArrayList<Users> getFriends(Users user) throws RemoteException {
+        return DAO.getUserFriends(user);
     }
 
     @Override
-    public ArrayList<Users> getNotifications(String phoneNumber) throws RemoteException {
-        return null;
+    public ArrayList<Users> getNotifications(Users user) throws RemoteException {
+        return DAO.getUserNotifications(user);
     }
 
     @Override
     public void notifyUpdate(Users users) throws RemoteException {
+        DAO.updateUser(users);
 
     }
     /*@Override
@@ -237,6 +236,17 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     }
 */
+
+    @Override
+    public boolean acceptRequest(Users currentUser, Users friend) throws RemoteException {
+
+        return DAO.acceptRequest(currentUser, friend);
+    }
+
+    @Override
+    public boolean declineRequest(Users currentUser, Users friend) throws RemoteException {
+        return DAO.declineRequest(currentUser,friend);
+    }
     private void addChatRoomToAllClients(ArrayList<Users> chatroomUsers, ChatRoom chatRoomExist) {
         chatroomUsers.forEach(users -> {
             try {
@@ -269,5 +279,50 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
         }
         System.out.println("this user has no life " + user);
         return null;
+    }
+
+    public void notifyUpdatedNotifications(ArrayList<Users> users) {
+        for (Users user : users) {
+            ClientInterface temp = getClient(user);
+            if (temp != null) {
+                try {
+                    temp.recieveUpdatedNotifications(user);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+
+    }
+    @Override
+    public void addUsersToFriedNotifications (List< String > contactList, Users user) throws
+            RemoteException {
+        DAO.addContactRequest(contactList, user);
+
+    }
+
+    @Override
+    public List<String> getUsersList ( int userId) throws RemoteException {
+        return DAO.getUsersList(userId);
+    }
+
+    @Override
+    public void notifyRequestedContacts (List< String > ContactList, Users user) throws RemoteException
+    {
+        ContactList.forEach(contact -> {
+            clients.forEach(clientInterface -> {
+                try {
+                    if (clientInterface.getUser().getId() == user.getId()) {
+                        System.out.println("sending notification to " + clientInterface.getUser());
+                        clientInterface.recieveContactRequest(user);
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+
     }
 }

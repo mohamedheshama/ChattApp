@@ -6,13 +6,14 @@ import org.project.exceptions.UserAlreadyExistException;
 import org.project.model.connection.ConnectionStrategy;
 import org.project.model.dao.friends.RequestStatus;
 
-import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -33,7 +34,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public Users login(String phoneNumber) {
         Users user;
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status,picture FROM users WHERE phone_number=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
             ps.setString(1, phoneNumber);
             rs = ps.executeQuery();
             if (rs.next()) {
@@ -85,8 +86,17 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public boolean updateUser(Users user) {
         // make sure no empty mandatory fields
         // make sure input is validated
+        ByteArrayInputStream bais=null;
+        try {
+            bais = new ByteArrayInputStream(user.getDisplayPicture());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE users.id=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
+        System.out.println(user.getName());
+        System.out.println(bais);
+
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status,picture FROM users WHERE users.id=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
             ps.setInt(1, user.getId());
             rs = ps.executeQuery();
             if (rs.next()) {
@@ -100,6 +110,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 rs.updateString("bio", user.getBio());
                 rs.updateString("status", String.valueOf(user.getStatus()));
                 rs.updateRow();
+                updatePicture(user);
                 return true;
             }
 
@@ -118,6 +129,25 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
         return false;
     }
+    public void updatePicture(Users user){
+        ByteArrayInputStream bais =null;
+        PreparedStatement pstmt = null;
+        int rowsAdded = -0;
+        try {
+            bais=new ByteArrayInputStream(user.getDisplayPicture());
+            String SQL = "UPDATE users SET picture = ? WHERE  id= ?";
+            pstmt = connection.prepareStatement(SQL);
+            pstmt.setBinaryStream(1, bais, user.getDisplayPicture().length);
+            pstmt.setInt(2,user.getId());
+            rowsAdded = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (rowsAdded > 0) {
+            System.out.println("user was inserted successfully!");
+        }
+    }
+
 
     @Override
     public boolean deleteUSer(Users user) {
@@ -149,11 +179,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     @Override
     public ArrayList<Users> getUserFriends(Users user) {
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status" +
+        try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status,u.picture" +
                 " FROM users u JOIN friends f on f.friend_id=u.id" +
                 " where f.user_id=? AND f.friend_status=?" +
                 " union" +
-                " SELECT u.id, u.name , u.phone_number, u.status" +
+                " SELECT u.id, u.name , u.phone_number, u.status,u.picture" +
                 " FROM users u JOIN friends f on f.user_id=u.id" +
                 " where f.friend_id=? AND f.friend_status=?;");) {
             ps.setInt(1, user.getId());
@@ -161,10 +191,12 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             ps.setInt(3, user.getId());
             ps.setString(4, String.valueOf(RequestStatus.Accepted));
             rs = ps.executeQuery();
+            user.getFriends().clear();
             while (rs.next()) {
                 Users friend = extractFriendFromResultSet(rs);
                 user.getFriends().add(friend);
             }
+            return user.getFriends();
 
         } catch (SQLException ex) {
             logger.warning(ex.getSQLState());
@@ -212,16 +244,19 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     @Override
     public ArrayList<Users> getUserNotifications(Users user) {
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("select u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on u.id=f.user_id where f.friend_id=? AND f.friend_status=? ;");) {
+        try (PreparedStatement ps = connection.prepareStatement("select u.id, u.name , u.phone_number, u.status, u.picture FROM users u JOIN friends f on u.id=f.user_id where f.friend_id=? AND f.friend_status=? ;");) {
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Pending));
             rs = ps.executeQuery();
+            user.getRequest_notifications().clear();
             while (rs.next()) {
                 Users friend =  extractFriendFromResultSet(rs);
+                System.out.println(friend);
 
                 //friend.setFriend(extractFriendFromResultSet(rs));
                 user.getRequest_notifications().add(friend);
             }
+            return user.getRequest_notifications();
 
         } catch (SQLException ex) {
             logger.warning(ex.getSQLState());
@@ -260,6 +295,9 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         user.setPhoneNumber(rs.getString("phone_number"));
         user.setName(rs.getString("name"));
         user.setStatus(UserStatus.valueOf(rs.getString("status")));
+        user.setDisplayPicture(rs.getBytes("picture"));
+
+        System.out.println("inside get frinds bytes"+user.getDisplayPicture());
 
         return user;
     }
@@ -315,11 +353,32 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     }
 
     @Override
+    public int getUserIDByPhoneNo(String phoneNo) {
+        int userId = 0;
+        ResultSet resultSet = null;
+        if (isUserExist(phoneNo)) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT id from users where phone_number=?;")) {
+                preparedStatement.setString(1, phoneNo);
+                resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    userId = resultSet.getInt(1);
+                }
+
+            } catch (SQLException ex) {
+                logger.warning(ex.getSQLState());
+                logger.warning(ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
+        return userId;
+    }
+
+    @Override
     public Map<String, Integer> getUsersNumByCountry() {
         Map<String, Integer> map = new HashMap<String, Integer>();
         ResultSet resultSet = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT count(id) ,country from users group by(country);")) {
-            resultSet = ps.executeQuery();
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT count(id) ,country from users group by(country) having country is not Null;")) {
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 map.put(resultSet.getString(2), resultSet.getInt(1));
             }
@@ -387,10 +446,99 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     }
 
     @Override
+    public boolean addContactRequest(List<String> contactList, Users user) {
+        int friendId = 0;
+        int result = 0;
+        boolean added = false;
+        if (contactList.size() > 0) {
+            for (String phoneNo : contactList) {
+                friendId = getUserIDByPhoneNo(phoneNo);
+                String sql = "Insert into friends (friend_status,user_id,friend_id)" +
+                        " values (?,?,?)";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+                    preparedStatement.setString(1, "Pending");
+                    preparedStatement.setInt(2, user.getId());
+                    preparedStatement.setInt(3, friendId);
+                    result = preparedStatement.executeUpdate();
+                    if (result > 0) {
+                        added = true;
+                    }
+                } catch (SQLException e) {
+                    logger.warning(e.getSQLState());
+                    logger.warning(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
+        return added;
+    }
+
+    @Override
+    public List<String> getUsersList(int userId) {
+        List<String> usersList = new ArrayList<>();
+        ResultSet resultSet = null;
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select phone_number from users  where id != ALL (select friend_id from friends where user_id = ? And friend_status IN ('Accepted','Pending' ) ) And id != ?;")) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, userId);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                usersList.add(resultSet.getString(1));
+            }
+
+        } catch (SQLException ex) {
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
+            ex.printStackTrace();
+        }
+        return usersList;
+    }
+
+    @Override
+    public boolean acceptRequest(Users currentUser, Users friend) {
+        try (PreparedStatement ps = connection.prepareStatement("UPDATE friends SET friend_status='Accepted' WHERE user_id=? AND friend_id=?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
+            ps.setInt(1, friend.getId());
+            ps.setInt(2,currentUser.getId());
+            ps.executeUpdate();
+            currentUser.setRequest_notifications(getUserNotifications(currentUser));
+            currentUser.setFriends(getUserFriends(currentUser));
+            System.out.println("done Accepted");
+
+            return true;
+        } catch (SQLException e) {
+            logger.warning(e.getSQLState());
+            logger.warning(e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean declineRequest(Users currentUser, Users friend) {
+        try (PreparedStatement ps = connection.prepareStatement("DELETE from friends WHERE friend_status='Pending' AND user_id=? AND friend_id=?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
+            ps.setInt(1, friend.getId());
+            ps.setInt(2,currentUser.getId());
+            ps.executeUpdate();
+            currentUser.setRequest_notifications(getUserNotifications(currentUser));
+            System.out.println("done Declined");
+            return true;
+        } catch (SQLException e) {
+            logger.warning(e.getSQLState());
+            logger.warning(e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+
+    }
+
+
+    @Override
     public Connection getConnection() throws SQLException {
             Connection conn;
             conn = connectionStrategy.getConnection();
             return conn;
 
     }
+
+
+
 }

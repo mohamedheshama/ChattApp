@@ -95,16 +95,17 @@ public class DashboardController implements Initializable {
         yAxis.setLabel("(NO.of Users)");
         XYChart.Series countriesSeries = new XYChart.Series();
         Map<String, Integer> map = usersDAO.getUsersNumByCountry();
-        for (Map.Entry m : map.entrySet()) {
-            countriesSeries.getData().add(new XYChart.Data(m.getKey(), m.getValue()));
+        if(!map.entrySet().toString().contains("null")) {
+            for (Map.Entry m : map.entrySet()) {
+                countriesSeries.getData().add(new XYChart.Data(m.getKey(), m.getValue()));
+            }
+
+            usersCountriestdata.add(countriesSeries);
+            usresCountryChart.setData(usersCountriestdata);
+            usresCountryChart.setTitle("statistics about the users’ country");
+            usresCountryChart.setBarGap(50);
+            usresCountryChart.setAnimated(true);
+
         }
-
-        usersCountriestdata.add(countriesSeries);
-        usresCountryChart.setData(usersCountriestdata);
-        usresCountryChart.setTitle("statistics about the users’ country");
-        usresCountryChart.setBarGap(50);
-        usresCountryChart.setAnimated(true);
-
-
     }
 }

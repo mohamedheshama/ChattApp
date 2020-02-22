@@ -11,6 +11,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public interface ServicesInterface extends Remote {
@@ -129,38 +130,18 @@ public interface ServicesInterface extends Remote {
     // end imaN
 
     //START SHIMAA
+    void addUsersToFriedNotifications(List<String> contactList, Users user) throws RemoteException;
 
+    List<String> getUsersList(int userId) throws RemoteException;
+    void notifyRequestedContacts(List<String> ContactList, Users user) throws RemoteException;
 
+    boolean acceptRequest(Users currentUser, Users friend) throws RemoteException;
 
+    boolean declineRequest(Users currentUser, Users friend) throws RemoteException;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public void notifyUpdatedNotifications(ArrayList<Users> users) throws RemoteException;
+    // check if phone number exists, update online users
+    //START SHIMAA
 
     //END SHIMAA
 }
