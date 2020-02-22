@@ -32,6 +32,15 @@ public interface ServicesInterface extends Remote {
     public void registerClient(ClientInterface clientImp) throws RemoteException;
 
     public ChatRoom requestChatRoom(ArrayList<Users> chatroomUsers) throws RemoteException;
+    public boolean changeUserStatus(Users user, UserStatus userStatus) throws RemoteException;
+    public boolean fileNotifyUser(Message newMsg, ChatRoom chatRoom) throws RemoteException;
+    // check if phone number exists, update online users
+    // start hend
+
+
+
+    public void sendFile( Message newMsg, RemoteInputStream remoteFileData)throws RemoteException;
+
 
     public boolean changeUserStatus(Users user, UserStatus userStatus) throws RemoteException;
 
@@ -140,8 +149,17 @@ public interface ServicesInterface extends Remote {
     boolean declineRequest(Users currentUser, Users friend) throws RemoteException;
 
     public void notifyUpdatedNotifications(ArrayList<Users> users) throws RemoteException;
-    // check if phone number exists, update online users
-    //START SHIMAA
 
-    //END SHIMAA
+    void addUsersToFriedNotifications(List<String> contactList, Users user) throws RemoteException;
+
+    List<String> getUsersList(int userId) throws RemoteException;
+
+    void notifyRequestedContacts(List<String> ContactList, Users user) throws RemoteException;
+   //START SHIMAA
+    void updateStatus(Users user, UserStatus newStatus) throws RemoteException;
+
+
+
+
+    public ArrayList<Users> getUserOnlineFriends(Users user) throws RemoteException;
 }

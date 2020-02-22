@@ -2,6 +2,7 @@ package org.project.controller;
 
 import com.healthmarketscience.rmiio.RemoteInputStream;
 import com.healthmarketscience.rmiio.RemoteInputStreamClient;
+import com.healthmarketscience.rmiio.RemoteInputStream;
 import org.project.controller.messages.Message;
 import org.project.model.ChatRoom;
 import org.project.model.connection.MysqlConnection;
@@ -56,10 +57,17 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
         System.out.println(user + " is registered");
         return DAO.register(user);
     }
+
+    @Override
+    public Boolean checkUserLogin(String phoneNumber, String password) throws RemoteException {
+        return DAO.matchUserNameAndPassword(phoneNumber, password);
+    }
+
     @Override
     public ArrayList<Users> getFriends(Users user) throws RemoteException {
         return DAO.getUserFriends(user);
     }
+
     @Override
     public ArrayList<Users> getNotifications(Users user) throws RemoteException {
         return DAO.getUserNotifications(user);
@@ -208,7 +216,9 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void registerClient(ClientInterface clientImp) throws RemoteException {
+        System.out.println("in server register client");
         clients.add(clientImp);
+        System.out.println("new Client is assigned" + clientImp.getUser());
     }
 
     @Override
@@ -248,6 +258,8 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     public boolean declineRequest(Users currentUser, Users friend) throws RemoteException {
         return DAO.declineRequest(currentUser,friend);
     }
+
+
     private void addChatRoomToAllClients(ArrayList<Users> chatroomUsers, ChatRoom chatRoomExist) {
         chatroomUsers.forEach(users -> {
             try {
@@ -261,9 +273,8 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     private ChatRoom checkChatRoomExist(String chatroomUser) {
         for (ChatRoom chatRoom : chatRooms) {
             if (chatRoom.getChatRoomId().equals(chatroomUser)){
-               return chatRoom;
+                return chatRoom;
             }
-
         }
         return null;
     }
@@ -312,12 +323,16 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     @Override
     public void notifyRequestedContacts (List< String > ContactList, Users user) throws RemoteException
     {
+        System.out.println("hello from notify contacts");
+        System.out.println("contacts list"+ContactList);
         ContactList.forEach(contact -> {
             clients.forEach(clientInterface -> {
                 try {
-                    if (clientInterface.getUser().getId() == user.getId()) {
+                    System.out.println("contact"+contact);
+                    System.out.println("client Interface"+clientInterface.getUser().getPhoneNumber());
+                    if (clientInterface.getUser().getPhoneNumber().equals(contact)) {
                         System.out.println("sending notification to " + clientInterface.getUser());
-                        clientInterface.recieveContactRequest(user);
+                        clientInterface.recieveUpdatedNotifications(clientInterface.getUser());
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -325,5 +340,15 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
             });
         });
 
+    }
+
+    @Override
+    public ArrayList<Users> getUserOnlineFriends(Users user) {
+        return DAO.getUserOnlineFriends(user);
+    }
+
+    @Override
+    public void updateStatus(Users user, UserStatus newStatus) throws RemoteException {
+        DAO.updateStatus(user,newStatus);
     }
 }

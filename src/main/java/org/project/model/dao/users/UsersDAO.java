@@ -41,6 +41,9 @@ public interface UsersDAO {
 
     boolean declineRequest(Users currentUser, Users friend);
 
+    public ArrayList<Users> getUserOnlineFriends(Users user);
+
+
     int getUserIDByPhoneNo(String phoneNo);
 
     boolean addContactRequest(List<String> contactList, Users user);

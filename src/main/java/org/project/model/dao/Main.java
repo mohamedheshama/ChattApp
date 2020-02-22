@@ -23,6 +23,7 @@ public class Main {
         //Map<String,Integer> map = usersDAO.getUsersNumByCountry();
         //List<String> contactListViewCell = usersDAO.getUsersList(1);
 
+
         /*for(String string: contactListViewCell){
             System.out.println("kkkkkkkkkkk"+string);
         }*/
@@ -37,14 +38,14 @@ public class Main {
         user2.setGender(Gender.Male);
         System.out.println(usersDAO.register(user2));*/
 
-        Users user3 = new Users();
+       /* Users user3 = new Users();
         user3.setPhoneNumber("01065001124");
         user3.setName("test");
         user3.setEmail("test@test.com");
         user3.setGender(Gender.Female);
         user3.setStatus(UserStatus.Busy);
         user3.setPassword("hello");
-        System.out.println(usersDAO.updateUser(user3));
+        System.out.println(usersDAO.updateUser(user3));*/
     }
 
 }

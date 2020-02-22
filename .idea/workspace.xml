@@ -2,19 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="94740d80-1ca1-49fa-a0d1-ca6be900e862" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/project/controller/ClientInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/project/controller/ClientInterface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/project/controller/ServicesImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/project/controller/ServicesImp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/project/controller/ServicesInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/project/controller/ServicesInterface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/project/controller/admin_home/right_side/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/project/controller/admin_home/right_side/DashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/project/model/connection/MysqlConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/project/model/connection/MysqlConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/project/model/dao/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/project/model/dao/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/project/model/dao/friends/Friends.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/project/model/dao/friends/Friends.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/project/model/dao/users/UsersDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/project/model/dao/users/UsersDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/project/model/dao/users/UsersDAOImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/project/model/dao/users/UsersDAOImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/project/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/project/App.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/module-info.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/org/project/App.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/org/project/App.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/project/model/connection/MysqlConnection.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/org/project/model/connection/MysqlConnection.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,20 +15,6 @@
   </component>
   <component name="CodeStyleSettingsInfer">
     <option name="done" value="true" />
-  </component>
-  <component name="DatabaseView">
-    <option name="SHOW_INTERMEDIATE" value="true" />
-    <option name="GROUP_DATA_SOURCES" value="true" />
-    <option name="GROUP_SCHEMA" value="true" />
-    <option name="GROUP_CONTENTS" value="false" />
-    <option name="SORT_POSITIONED" value="false" />
-    <option name="SHOW_EMPTY_GROUPS" value="false" />
-    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
-    <option name="HIDDEN_KINDS">
-      <set />
-    </option>
-    <expand />
-    <select />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -62,7 +40,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$/IdeaProjects/SpeakApplication" />
+    <property name="last_opened_file_path" value="F:/ITI/FX/material-dashboard-fx-master/material-dashboard-fx-master" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -156,18 +134,6 @@
       <updated>1580668990738</updated>
       <workItem from="1581002284742" duration="1783000" />
       <workItem from="1581429390875" duration="1878000" />
-      <workItem from="1581786228405" duration="988000" />
-      <workItem from="1581821648220" duration="3435000" />
-      <workItem from="1581836422410" duration="491000" />
-      <workItem from="1581851922296" duration="6000" />
-      <workItem from="1581862692006" duration="1274000" />
-      <workItem from="1581882621414" duration="3165000" />
-      <workItem from="1581895415614" duration="523000" />
-      <workItem from="1581913025082" duration="5793000" />
-      <workItem from="1581942255978" duration="2069000" />
-      <workItem from="1581980851641" duration="14423000" />
-      <workItem from="1582021666114" duration="1586000" />
-      <workItem from="1582037952500" duration="4411000" />
     </task>
     <servers />
   </component>
@@ -188,78 +154,53 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
-    <state x="485" y="72" key="#App" timestamp="1581821836474">
+    <state x="409" y="33" key="#App" timestamp="1582040269310">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="409" y="33" key="#App/0.0.1366.728@0.0.1366.728" timestamp="1582040269310" />
+    <state x="549" y="167" key="FileChooserDialogImpl" timestamp="1580669859713">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="485" y="72" key="#App/0.0.1536.824@0.0.1536.824" timestamp="1581821836474" />
-    <state x="223" y="68" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1582041601349">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1580669859713" />
+    <state width="1323" height="326" key="GridCell.Tab.0.bottom" timestamp="1582040403601">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="223" y="68" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824@0.0.1536.824" timestamp="1582041601349" />
-    <state x="574" y="123" key="#com.intellij.ide.util.MemberChooser" timestamp="1582043220712">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1323" height="326" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1582040403601" />
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1580669757041" />
+    <state width="1323" height="326" key="GridCell.Tab.0.center" timestamp="1582040403601">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="574" y="123" key="#com.intellij.ide.util.MemberChooser/0.0.1536.824@0.0.1536.824" timestamp="1582043220712" />
-    <state x="147" y="71" key="DiffContextDialog" timestamp="1581985036445">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1323" height="326" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1582040403601" />
+    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1580669757041" />
+    <state width="1323" height="326" key="GridCell.Tab.0.left" timestamp="1582040403600">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="147" y="71" key="DiffContextDialog/0.0.1536.824@0.0.1536.824" timestamp="1581985036445" />
-    <state x="549" y="167" key="FileChooserDialogImpl" timestamp="1582038826029">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1323" height="326" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1582040403600" />
+    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1580669757041" />
+    <state width="1323" height="326" key="GridCell.Tab.0.right" timestamp="1582040403601">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1582038826029" />
-    <state width="1493" height="147" key="GridCell.Tab.0.bottom" timestamp="1582045393013">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1323" height="326" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1582040403601" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1580669757041" />
+    <state x="395" y="82" key="MultipleFileMergeDialog" timestamp="1582038001500">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1493" height="147" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1582045393013" />
-    <state width="1493" height="147" key="GridCell.Tab.0.center" timestamp="1582045393013">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="1493" height="147" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1582045393013" />
-    <state width="1493" height="147" key="GridCell.Tab.0.left" timestamp="1582045393013">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="1493" height="147" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1582045393013" />
-    <state width="1493" height="147" key="GridCell.Tab.0.right" timestamp="1582045393013">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="1493" height="147" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1582045393013" />
-    <state x="147" y="71" key="MergeDialog" timestamp="1582042044242">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="147" y="71" key="MergeDialog/0.0.1536.824@0.0.1536.824" timestamp="1582042044242" />
-    <state x="481" y="129" key="MultipleFileMergeDialog" timestamp="1582042044252">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="481" y="129" key="MultipleFileMergeDialog/0.0.1536.824@0.0.1536.824" timestamp="1582042044252" />
-    <state x="513" y="124" key="RollbackChangesDialog" timestamp="1581985038358">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="513" y="124" key="RollbackChangesDialog/0.0.1536.824@0.0.1536.824" timestamp="1581985038358" />
+    <state x="395" y="82" key="MultipleFileMergeDialog/0.0.1366.728@0.0.1366.728" timestamp="1582038001500" />
     <state x="249" y="0" key="SettingsEditor" timestamp="1580669749838">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="249" y="0" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1580669749838" />
-    <state x="465" y="238" key="com.intellij.ide.util.TipDialog" timestamp="1582037954516">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state x="494" y="284" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1582040660391">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="465" y="238" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1582037954516" />
-    <state x="578" y="330" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1582045846118">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state x="494" y="284" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1366.728@0.0.1366.728" timestamp="1582040660391" />
+    <state x="371" y="168" key="git4idea.merge.GitPullDialog" timestamp="1582040648997">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="578" y="330" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.824@0.0.1536.824" timestamp="1582045846118" />
-    <state x="458" y="205" key="git4idea.merge.GitPullDialog" timestamp="1581883280159">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state x="371" y="168" key="git4idea.merge.GitPullDialog/0.0.1366.728@0.0.1366.728" timestamp="1582040648997" />
+    <state x="339" y="162" key="run.anything.popup" timestamp="1582040385185">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="458" y="205" key="git4idea.merge.GitPullDialog/0.0.1536.824@0.0.1536.824" timestamp="1581883280159" />
-    <state x="425" y="187" key="run.anything.popup" timestamp="1582042663599">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="425" y="187" key="run.anything.popup/0.0.1536.824@0.0.1536.824" timestamp="1582042663599" />
-  </component>
-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/SpeackApplicationServer$App.ic" NAME="App Coverage Results" MODIFIED="1582021692785" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-      <FILTER>org.project.*</FILTER>
-    </SUITE>
+    <state x="339" y="162" key="run.anything.popup/0.0.1366.728@0.0.1366.728" timestamp="1582040385185" />
   </component>
 </project>
