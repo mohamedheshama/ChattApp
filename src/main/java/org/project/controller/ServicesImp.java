@@ -72,10 +72,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     public ArrayList<Users> getNotifications(Users user) throws RemoteException {
         return DAO.getUserNotifications(user);
     }
-    @Override
-    public Boolean checkUserLogin(String phoneNumber, String password) throws RemoteException {
-        return DAO.matchUserNameAndPassword(phoneNumber, password);
-    }
+
 
 
 
@@ -91,31 +88,11 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
             clientInterface.sendAccept(check);
         }
     }*/
-@Override
-    public void fileNotifyUser(Message newMsg, ChatRoom chatRoom,int userSendFileId) throws RemoteException{
-      boolean flage= true;
-    for (Users user : chatRoom.getUsers()) {
-        for (ClientInterface clientInterface : clients) {
-            try {
-                //System.out.println(user.getId()+userSendFileId);
-                if (clientInterface.getUser().getId() == user.getId()&&(user.getId()!= userSendFileId)) {
-                    System.out.println("sending file to " + clientInterface.getUser());
-                    if(clientInterface.notifyrecieveFile(newMsg , chatRoom,userSendFileId) ){
-                        flage=true;
-                    }
-                    else {
-                        flage=false;
-                    }
-                }
 
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
-//return flage;
-    }
+
+
+
 
     @Override
     public void sendFile(String newMsg, RemoteInputStream remoteFileData, ChatRoom chatRoom, int userSendFileId) throws IOException,RemoteException {

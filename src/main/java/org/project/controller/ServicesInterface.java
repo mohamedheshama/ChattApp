@@ -33,18 +33,17 @@ public interface ServicesInterface extends Remote {
 
     public ChatRoom requestChatRoom(ArrayList<Users> chatroomUsers) throws RemoteException;
     public boolean changeUserStatus(Users user, UserStatus userStatus) throws RemoteException;
-    public boolean fileNotifyUser(Message newMsg, ChatRoom chatRoom) throws RemoteException;
+
     // check if phone number exists, update online users
     // start hend
 
 
 
-    public void sendFile( Message newMsg, RemoteInputStream remoteFileData)throws RemoteException;
 
 
-    public boolean changeUserStatus(Users user, UserStatus userStatus) throws RemoteException;
 
-    public void fileNotifyUser(Message newMsg, ChatRoom chatRoom,int userSendFileId) throws RemoteException;
+
+
     public void sendFile( String newMsg, RemoteInputStream remoteFileData,ChatRoom chatRoom,int userSendFileId) throws IOException ,RemoteException;
     // check if phone number exists, update online users
     // start hend
@@ -139,10 +138,7 @@ public interface ServicesInterface extends Remote {
     // end imaN
 
     //START SHIMAA
-    void addUsersToFriedNotifications(List<String> contactList, Users user) throws RemoteException;
 
-    List<String> getUsersList(int userId) throws RemoteException;
-    void notifyRequestedContacts(List<String> ContactList, Users user) throws RemoteException;
 
     boolean acceptRequest(Users currentUser, Users friend) throws RemoteException;
 

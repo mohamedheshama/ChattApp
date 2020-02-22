@@ -22,9 +22,9 @@ public interface ClientInterface extends Remote {
     void recieveUpdatedNotifications(Users user) throws RemoteException;
     // start hend
 
-    public boolean notifyrecieveFile(Message newMsg, ChatRoom chatRoom) throws RemoteException;
 
-    void recieveUpdatedNotifications(Users user) throws RemoteException;
+
+
 
 
 
