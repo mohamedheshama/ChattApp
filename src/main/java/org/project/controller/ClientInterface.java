@@ -18,9 +18,9 @@ public interface ClientInterface extends Remote {
     void addChatRoom(ChatRoom chatRoomExist) throws RemoteException;
     // start hend
 
-    public boolean notifyrecieveFile(Message newMsg, ChatRoom chatRoom) throws RemoteException;
+    public boolean notifyrecieveFile(Message newMsg, ChatRoom chatRoom,int userSendFileId) throws RemoteException;
 
-
+public boolean sendAccept(boolean check);
 
 
 

@@ -76,56 +76,106 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     public void notifyUpdate(Users users) throws RemoteException {
 
     }
+    /*@Override
+    public void sendAcceptToServer(boolean check){
+        ClientInterface clientInterface = null;
+        if(check==true){
+            clientInterface.sendAccept(check);
+        }
+    }*/
 @Override
-    public boolean fileNotifyUser(Message newMsg, ChatRoom chatRoom) throws RemoteException{
-     final boolean[] flage= {true};
-    chatRoom.getUsers().forEach(user -> {
-        clients.forEach(clientInterface -> {
+    public void fileNotifyUser(Message newMsg, ChatRoom chatRoom,int userSendFileId) throws RemoteException{
+      boolean flage= true;
+    for (Users user : chatRoom.getUsers()) {
+        for (ClientInterface clientInterface : clients) {
             try {
-                if (clientInterface.getUser().getId() == user.getId()) {
+                //System.out.println(user.getId()+userSendFileId);
+                if (clientInterface.getUser().getId() == user.getId()&&(user.getId()!= userSendFileId)) {
                     System.out.println("sending file to " + clientInterface.getUser());
-                 if(clientInterface.notifyrecieveFile(newMsg , chatRoom) ){
-                     flage[0]=true;
-                 }
-                 else {
-                     flage[0]=false;
-                 }
-
-
-
+                    if(clientInterface.notifyrecieveFile(newMsg , chatRoom,userSendFileId) ){
+                        flage=true;
+                    }
+                    else {
+                        flage=false;
+                    }
                 }
 
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-        });
-    });
+        }
+    }
 
-return flage[0];
-
+//return flage;
     }
 
     @Override
-    public void sendFile( Message newMsg, RemoteInputStream remoteFileData) throws IOException,RemoteException {
-        InputStream fileData= RemoteInputStreamClient.wrap(remoteFileData);
-        System.out.println("server 2 write");
-        ReadableByteChannel from = Channels.newChannel(fileData);
-        ByteBuffer buffer = ByteBuffer.allocateDirect(fileData.available());
+    public void sendFile( String newMsg, RemoteInputStream remoteFileData,ChatRoom chatRoom,int userSendFileId) throws IOException,RemoteException {
 
-        WritableByteChannel to = FileChannel.open(Paths.get("D:\\iti java\\xmlAPI\\firstTask\\'"+fileData+"'"), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
-        while (from.read(buffer) != -1)
-        {
-            buffer.flip();
-            while (buffer.hasRemaining()) {
-                System.out.println("server write");
-                to.write(buffer);
+        chatRoom.getUsers().forEach(user -> {
+            if(user.getId()!=userSendFileId){
+                InputStream fileData= null;
+                try {
+                    fileData = RemoteInputStreamClient.wrap(remoteFileData);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("server 2 write");
+                ReadableByteChannel from = Channels.newChannel(fileData);
+                ByteBuffer buffer = null;
+                try {
+                    buffer = ByteBuffer.allocateDirect(fileData.available());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+                WritableByteChannel to = null;
+                try {
+                    to = FileChannel.open(Paths.get("D:\\iti java\\xmlAPI\\firstTask\\"+newMsg), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                while (true)
+                {
+                    try {
+                        if (!(from.read(buffer) != -1)) break;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    buffer.flip();
+                    while (buffer.hasRemaining()) {
+                        System.out.println("server write");
+                        try {
+                            to.write(buffer);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    buffer.clear();
+                }
+                try {
+                    from.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    to.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    fileData.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
-            buffer.clear();
-        }
-        from.close();
-        to.close();
-        fileData.close();
 
+
+
+
+        });
 
 
     }
