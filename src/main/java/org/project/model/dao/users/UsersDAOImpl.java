@@ -34,7 +34,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public Users login(String phoneNumber) {
         Users user;
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status,picture FROM users WHERE phone_number=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE phone_number=?" , ResultSet.CLOSE_CURSORS_AT_COMMIT);){
             ps.setString(1, phoneNumber);
             rs = ps.executeQuery();
             if (rs.next()) {
@@ -93,10 +93,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             e.printStackTrace();
         }
         ResultSet rs = null;
-        System.out.println(user.getName());
-        System.out.println(bais);
-
-        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status,picture FROM users WHERE users.id=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
+        try (PreparedStatement ps = connection.prepareStatement("SELECT id,name,phone_number,email,picture,password,gender,country,date_of_birth,bio,status FROM users WHERE users.id=?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);) {
             ps.setInt(1, user.getId());
             rs = ps.executeQuery();
             if (rs.next()) {
@@ -179,11 +176,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     @Override
     public ArrayList<Users> getUserFriends(Users user) {
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status,u.picture" +
+        try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status" +
                 " FROM users u JOIN friends f on f.friend_id=u.id" +
                 " where f.user_id=? AND f.friend_status=?" +
                 " union" +
-                " SELECT u.id, u.name , u.phone_number, u.status,u.picture" +
+                " SELECT u.id, u.name , u.phone_number, u.status" +
                 " FROM users u JOIN friends f on f.user_id=u.id" +
                 " where f.friend_id=? AND f.friend_status=?;");) {
             ps.setInt(1, user.getId());
@@ -244,14 +241,13 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     @Override
     public ArrayList<Users> getUserNotifications(Users user) {
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("select u.id, u.name , u.phone_number, u.status, u.picture FROM users u JOIN friends f on u.id=f.user_id where f.friend_id=? AND f.friend_status=? ;");) {
+        try (PreparedStatement ps = connection.prepareStatement("select u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on u.id=f.user_id where f.friend_id=? AND f.friend_status=? ;");) {
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Pending));
             rs = ps.executeQuery();
             user.getRequest_notifications().clear();
             while (rs.next()) {
                 Users friend =  extractFriendFromResultSet(rs);
-                System.out.println(friend);
 
                 //friend.setFriend(extractFriendFromResultSet(rs));
                 user.getRequest_notifications().add(friend);
@@ -295,7 +291,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         user.setPhoneNumber(rs.getString("phone_number"));
         user.setName(rs.getString("name"));
         user.setStatus(UserStatus.valueOf(rs.getString("status")));
-        user.setDisplayPicture(rs.getBytes("picture"));
+        //user.setDisplayPicture(rs.getBytes("picture"));
 
         System.out.println("inside get frinds bytes"+user.getDisplayPicture());
 
@@ -352,6 +348,8 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             logger.warning(e.getMessage());
             e.printStackTrace();
         }
+
+
         return false;
     }
 
@@ -380,8 +378,8 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public Map<String, Integer> getUsersNumByCountry() {
         Map<String, Integer> map = new HashMap<String, Integer>();
         ResultSet resultSet = null;
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT count(id) ,country from users group by(country) having country is not Null;")) {
-            resultSet = preparedStatement.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement("SELECT count(id) ,country from users group by(country);")) {
+            resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 map.put(resultSet.getString(2), resultSet.getInt(1));
             }
@@ -531,6 +529,28 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         }
         return false;
 
+    }
+
+    @Override
+    public ArrayList<Users> getUserOnlineFriends(Users user) {
+        ResultSet rs = null;
+        ArrayList<Users> OnlineFriendsList = new ArrayList<Users>();
+        try (PreparedStatement ps = connection.prepareStatement("SELECT  f.friend_id id ,u2.phone_number,u2.name ,u2.email,u2.password,u2.gender,u2.country,u2.date_of_birth,u2.bio,u2.status,u2.picture" +
+                " FROM users u , friends f, users u2 where f.user_id=u.id and" +
+                " f.friend_id = u2.id AND f.friend_status='Accepted' and u.id = ? AND u2.status='Available';")){
+            ps.setInt(1, user.getId());
+            rs = ps.executeQuery();
+            while (rs.next())
+            {
+                OnlineFriendsList.add(extractUserFromResultSet(rs));
+
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+
+        }
+        return OnlineFriendsList;
     }
 
 

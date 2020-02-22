@@ -1,5 +1,6 @@
 package org.project.controller;
 
+import com.healthmarketscience.rmiio.RemoteInputStream;
 import org.project.controller.messages.Message;
 import org.project.model.ChatRoom;
 import org.project.model.connection.MysqlConnection;
@@ -111,6 +112,21 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
+    public boolean changeUserStatus(Users user, UserStatus userStatus) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean fileNotifyUser(Message newMsg, ChatRoom chatRoom) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public void sendFile(Message newMsg, RemoteInputStream remoteFileData) throws RemoteException {
+
+    }
+
+    @Override
     public boolean acceptRequest(Users currentUser, Users friend) throws RemoteException {
 
         return DAO.acceptRequest(currentUser, friend);
@@ -202,6 +218,11 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
             });
         });
 
+    }
+
+    @Override
+    public ArrayList<Users> getUserOnlineFriends(Users user) {
+        return DAO.getUserOnlineFriends(user);
     }
 
     @Override
