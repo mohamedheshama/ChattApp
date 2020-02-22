@@ -339,10 +339,13 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
     @Override
     public boolean updateStatus(Users user, UserStatus status) {
-        try (PreparedStatement ps = connection.prepareStatement("update users set Status = '?' where id = ?;")) {
+        try (PreparedStatement ps = connection.prepareStatement("update users set Status =? where id = ?;")) {
             ps.setString(1, String.valueOf(status));
             ps.setInt(2, user.getId());
-            if (ps.executeUpdate() > 0)
+            if (ps.executeUpdate() > 0){
+                System.out.println(user);
+                return true;
+            }
                 return true;
         } catch (SQLException e) {
             logger.warning(e.getSQLState());
