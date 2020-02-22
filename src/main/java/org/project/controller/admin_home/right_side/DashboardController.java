@@ -103,8 +103,7 @@ public class DashboardController implements Initializable {
             usersCountriestdata.add(countriesSeries);
             usresCountryChart.setData(usersCountriestdata);
             usresCountryChart.setTitle("statistics about the users’ country");
-            usresCountryChart.setBarGap(50);
-            usresCountryChart.setAnimated(true);
+            usresCountryChart.setLegendVisible(false);
 
         }
     }

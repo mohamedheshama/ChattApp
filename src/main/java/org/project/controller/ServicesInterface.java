@@ -2,6 +2,7 @@ package org.project.controller;
 
 import org.project.controller.messages.Message;
 import org.project.model.ChatRoom;
+import org.project.model.dao.users.UserStatus;
 import org.project.model.dao.users.Users;
 
 import java.rmi.Remote;
@@ -42,10 +43,11 @@ public interface ServicesInterface extends Remote {
     void notifyRequestedContacts(List<String> ContactList, Users user) throws RemoteException;
     // check if phone number exists, update online users
     //START SHIMAA
-    void addUsersToFriedNotifications(List<String> contactList, Users user) throws RemoteException;
+    void updateStatus(Users user, UserStatus newStatus) throws RemoteException;
 
-    List<String> getUsersList(int userId) throws RemoteException;
-    void notifyRequestedContacts(List<String> ContactList, Users user) throws RemoteException;
+
+
+
 
     //END SHIMAA
 }

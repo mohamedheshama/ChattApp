@@ -3,6 +3,7 @@ package org.project.controller;
 import org.project.controller.messages.Message;
 import org.project.model.ChatRoom;
 import org.project.model.connection.MysqlConnection;
+import org.project.model.dao.users.UserStatus;
 import org.project.model.dao.users.Users;
 import org.project.model.dao.users.UsersDAO;
 import org.project.model.dao.users.UsersDAOImpl;
@@ -184,12 +185,16 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     @Override
     public void notifyRequestedContacts (List< String > ContactList, Users user) throws RemoteException
     {
+        System.out.println("hello from notify contacts");
+        System.out.println("contacts list"+ContactList);
         ContactList.forEach(contact -> {
             clients.forEach(clientInterface -> {
                 try {
-                    if (clientInterface.getUser().getId() == user.getId()) {
+                    System.out.println("contact"+contact);
+                    System.out.println("client Interface"+clientInterface.getUser().getPhoneNumber());
+                    if (clientInterface.getUser().getPhoneNumber().equals(contact)) {
                         System.out.println("sending notification to " + clientInterface.getUser());
-                        clientInterface.recieveContactRequest(user);
+                        clientInterface.recieveUpdatedNotifications(clientInterface.getUser());
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -198,4 +203,11 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
         });
 
     }
+
+    @Override
+    public void updateStatus(Users user, UserStatus newStatus) throws RemoteException {
+        DAO.updateStatus(user,newStatus);
+    }
 }
+
+
