@@ -1,5 +1,7 @@
 package org.project.controller;
 
+import com.healthmarketscience.rmiio.RemoteInputStream;
+import com.healthmarketscience.rmiio.RemoteInputStreamClient;
 import org.project.controller.messages.Message;
 import org.project.model.ChatRoom;
 import org.project.model.connection.MysqlConnection;
@@ -54,21 +56,20 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
         System.out.println(user + " is registered");
         return DAO.register(user);
     }
-
+    @Override
+    public ArrayList<Users> getFriends(Users user) throws RemoteException {
+        return DAO.getUserFriends(user);
+    }
+    @Override
+    public ArrayList<Users> getNotifications(Users user) throws RemoteException {
+        return DAO.getUserNotifications(user);
+    }
     @Override
     public Boolean checkUserLogin(String phoneNumber, String password) throws RemoteException {
         return DAO.matchUserNameAndPassword(phoneNumber, password);
     }
 
-    @Override
-    public ArrayList<Users> getFriends(Users user) throws RemoteException {
-        return DAO.getUserFriends(user);
-    }
 
-    @Override
-    public ArrayList<Users> getNotifications(Users user) throws RemoteException {
-        return DAO.getUserNotifications(user);
-    }
 
     @Override
     public void notifyUpdate(Users users) throws RemoteException {
@@ -109,7 +110,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
-    public void sendFile( String newMsg, RemoteInputStream remoteFileData,ChatRoom chatRoom,int userSendFileId) throws IOException,RemoteException {
+    public void sendFile(String newMsg, RemoteInputStream remoteFileData, ChatRoom chatRoom, int userSendFileId) throws IOException,RemoteException {
 
         chatRoom.getUsers().forEach(user -> {
             if(user.getId()!=userSendFileId){

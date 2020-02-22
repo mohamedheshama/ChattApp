@@ -21,9 +21,9 @@ public interface ServicesInterface extends Remote {
 
     public Boolean checkUserLogin(String phoneNumber, String password) throws RemoteException;
 
-    public ArrayList<Users> getFriends(String phoneNumber) throws RemoteException;
+    public ArrayList<Users> getFriends(Users user) throws RemoteException;
 
-    public ArrayList<Users> getNotifications(String phoneNumber) throws RemoteException;
+    public ArrayList<Users> getNotifications(Users user) throws RemoteException ;
 
     public void notifyUpdate(Users users) throws RemoteException;
 
