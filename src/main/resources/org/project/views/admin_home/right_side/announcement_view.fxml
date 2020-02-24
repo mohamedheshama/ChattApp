@@ -1,6 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<?import javafx.scene.layout.VBox?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.2-internal"
-      fx:controller="org.project.controller.admin_home.right_side.AnnouncementController"/>
+<VBox alignment="TOP_CENTER" prefHeight="276.0" prefWidth="703.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.project.controller.admin_home.right_side.AnnouncementController">
+    <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="722.0">
+        <children>
+            <JFXComboBox fx:id="sizeComboBox" prefHeight="12.0" prefWidth="74.0" visibleRowCount="5" HBox.hgrow="ALWAYS" />
+            <JFXToggleButton fx:id="boldButton" prefHeight="25.0" prefWidth="74.0" text="B" HBox.hgrow="ALWAYS">
+                <font>
+                    <Font name="Times New Roman Bold" size="18.0" />
+                </font>
+            </JFXToggleButton>
+            <JFXToggleButton fx:id="italicButton" prefHeight="48.0" prefWidth="103.0" text="I">
+                <font>
+                    <Font name="Times New Roman Italic" size="18.0" />
+                </font>
+            </JFXToggleButton>
+            <JFXComboBox fx:id="fontComboBox" prefHeight="26.0" prefWidth="133.0" visibleRowCount="5" />
+            <JFXButton id="addGroupMembersImgBtn" ellipsisString="" graphicTextGap="0.0" prefHeight="0.0" prefWidth="54.0" textAlignment="CENTER" />
+            <JFXColorPicker id="fontColorPicker" fx:id="fontColorPicker" prefHeight="26.0" prefWidth="90.0" promptText="choose font color ..." style="-fx-color-label-visible: false;" HBox.hgrow="ALWAYS" />
+        </children>
+        <VBox.margin>
+            <Insets left="50.0" />
+        </VBox.margin>
+        <padding>
+            <Insets left="10.0" />
+        </padding>
+    </HBox>
+    <HBox alignment="CENTER" layoutX="27.0" layoutY="542.0">
+        <children>
+            <HBox alignment="CENTER" style="-fx-background-color: #ffffff; -fx-background-radius: 30;" HBox.hgrow="ALWAYS">
+                <children>
+                    <TextArea id="msgTxtField" fx:id="msgTxtField" prefHeight="150.0" prefWidth="610.0" promptText="Type your Announcement... " style="-fx-border-width: 0px;" wrapText="true" HBox.hgrow="ALWAYS">
+                        <font>
+                            <Font name="Arial" size="14.0" />
+                        </font>
+                  <HBox.margin>
+                     <Insets right="20.0" />
+                  </HBox.margin>
+                    </TextArea>
+                    <JFXButton id="sendMsgImgBtn" fx:id="sendMsgImgBtn" defaultButton="true" ellipsisString="" graphicTextGap="0.0" onAction="#sendMessage" prefHeight="46.0" prefWidth="46.0" text=" ">
+                        <graphic>
+                            <ImageView fitHeight="43.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../../../images/send_message_icon.png" />
+                                </image>
+                            </ImageView>
+                        </graphic>
+                        <font>
+                            <Font size="8.0" />
+                        </font>
+                        <tooltip>
+                            <Tooltip text="Send message">
+                                <font>
+                                    <Font size="16.0" />
+                                </font>
+                            </Tooltip>
+                        </tooltip>
+                    </JFXButton>
+
+                </children>
+            <HBox.margin>
+               <Insets left="50.0" right="50.0" />
+            </HBox.margin>
+            </HBox>
+        </children>
+        <VBox.margin>
+            <Insets bottom="10.0" />
+        </VBox.margin>
+    </HBox>
+   <padding>
+      <Insets top="50.0" />
+   </padding>
+</VBox>

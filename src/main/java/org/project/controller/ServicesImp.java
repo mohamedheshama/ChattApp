@@ -344,4 +344,21 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
         DAO.updateStatus(user,newStatus);
     }
 
+    @Override
+    public void sendMessageFromAdminToOnlineUsers(Message newMsg, ArrayList<Users> onlineUsersList) throws RemoteException {
+        onlineUsersList.forEach(onlineUser -> {
+            clients.forEach(clientInterface -> {
+                try {
+                    System.out.println("onlineUser"+onlineUser);
+                    System.out.println("client Interface"+clientInterface.getUser().getPhoneNumber());
+                    if (clientInterface.getUser().getId()== onlineUser.getId()) {
+                        System.out.println("sending message to " + clientInterface.getUser());
+                        clientInterface.recieveMsgFromAdmin(newMsg,clientInterface.getUser());
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+    }
 }

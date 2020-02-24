@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.project.controller.ServicesImp;
 import org.project.controller.ServicesInterface;
+import org.project.controller.admin_home.right_side.AnnouncementController;
 import org.project.controller.admin_home.right_side.DashboardController;
 import org.project.model.connection.ConnectionStrategy;
 import org.project.model.connection.MysqlConnection;
@@ -62,13 +63,18 @@ public class MainAdminController implements Initializable {
         dashboardHbox.setStyle("-fx-background-color:#2A3F54");
         connectionStrategy = MysqlConnection.getInstance();
         try {
+            FXMLLoader loader;
             usersDAO = new UsersDAOImpl(connectionStrategy);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/dashboard_view.fxml"));
+             loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/dashboard_view.fxml"));
             dashboard = loader.load();
             DashboardController dashboardController = loader.getController();
             dashboardController.setUsersDAO(usersDAO);
             users = FXMLLoader.load(getClass().getResource("/org/project/views/admin_home/right_side/users_view.fxml"));
-            announcement = FXMLLoader.load(getClass().getResource("/org/project/views/admin_home/right_side/announcement_view.fxml"));
+             loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/announcement_view.fxml"));
+            announcement = loader.load();
+            AnnouncementController announcementController =loader.getController();
+            announcementController.setUsersDAO(usersDAO);
+            announcementController.setServicesInterface(servicesImp);
             setNode(dashboard);
         } catch (SQLException | IOException e) {
             e.printStackTrace();
