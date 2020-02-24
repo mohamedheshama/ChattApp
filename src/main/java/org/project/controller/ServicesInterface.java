@@ -158,4 +158,6 @@ public interface ServicesInterface extends Remote {
 
 
     public ArrayList<Users> getUserOnlineFriends(Users user) throws RemoteException;
+    void notifyNewGroup(ArrayList<Users> groupUsers) throws RemoteException;
+
 }

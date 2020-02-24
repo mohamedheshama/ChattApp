@@ -326,7 +326,22 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
+    public void notifyNewGroup(ArrayList<Users> groupUsers) throws RemoteException {
+        System.out.println("Group list"+ groupUsers);
+        for (Users user : groupUsers) {
+            ClientInterface temp = getClient(user);
+            if (temp != null) {
+                System.out.println("recieve new group chat for"+user);
+                temp.recieveNewGroupChat(user);
+            }
+
+        }
+
+    }
+
+    @Override
     public void updateStatus(Users user, UserStatus newStatus) throws RemoteException {
         DAO.updateStatus(user,newStatus);
     }
+
 }
