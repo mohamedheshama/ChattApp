@@ -60,6 +60,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public Boolean checkUserLogin(String phoneNumber, String password) throws RemoteException {
+        System.out.println("cheking user login"+ phoneNumber+password);
         return DAO.matchUserNameAndPassword(phoneNumber, password);
     }
 
@@ -97,7 +98,6 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void sendFile(String newMsg, RemoteInputStream remoteFileData, ChatRoom chatRoom, int userSendFileId) throws IOException,RemoteException {
-        System.out.println("in server file To send th fucken file");
         chatRoom.getUsers().forEach(user -> {
             if(user.getId()!=userSendFileId){
                 InputStream fileData= null;
@@ -327,13 +327,14 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
-    public void notifyNewGroup(ArrayList<Users> groupUsers) throws RemoteException {
-        System.out.println("Group list"+ groupUsers);
+    public void notifyNewGroup(ArrayList<Users> groupUsers,ChatRoom currentChatRoom) throws RemoteException {
+
         for (Users user : groupUsers) {
+            System.out.println("friends for: "+user.getName()+" are -->"+user.getFriends());
             ClientInterface temp = getClient(user);
             if (temp != null) {
                 System.out.println("recieve new group chat for"+user);
-                temp.recieveNewGroupChat(user);
+                temp.recieveNewGroupChat(user,currentChatRoom);
             }
 
         }

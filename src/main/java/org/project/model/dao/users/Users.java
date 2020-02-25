@@ -137,6 +137,7 @@ public class Users implements Serializable {
                 ", gender=" + gender +
                 ", country='" + country + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
+                ",displayPicture"+displayPicture+
                 '}';
     }
 }
