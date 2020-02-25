@@ -7,6 +7,7 @@ import org.project.model.dao.users.UserStatus;
 import org.project.model.dao.users.Users;
 
 import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
@@ -44,12 +45,12 @@ public interface ServicesInterface extends Remote {
 
 
 
-    public void sendFile( String newMsg, RemoteInputStream remoteFileData,ChatRoom chatRoom,int userSendFileId) throws IOException ,RemoteException;
-    // check if phone number exists, update online users
+   // check if phone number exists, update online users
     // start hend
 
 
 
+    public void sendFile( String newMsg, RemoteInputStream remoteFileData,ChatRoom chatRoom,int userSendFileId)throws RemoteException , IOException, NotBoundException;
 
 
 
@@ -146,16 +147,36 @@ public interface ServicesInterface extends Remote {
 
     public void notifyUpdatedNotifications(ArrayList<Users> users) throws RemoteException;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // end imaN
+
+    //START SHIMAA
     void addUsersToFriedNotifications(List<String> contactList, Users user) throws RemoteException;
 
     List<String> getUsersList(int userId) throws RemoteException;
 
     void notifyRequestedContacts(List<String> ContactList, Users user) throws RemoteException;
    //START SHIMAA
-    void updateStatus(Users user, UserStatus newStatus) throws RemoteException;
 
 
 
 
     public ArrayList<Users> getUserOnlineFriends(Users user) throws RemoteException;
+    void notifyNewGroup(ArrayList<Users> groupUsers) throws RemoteException;
+
+    void updateStatus(Users user, UserStatus newStatus) throws RemoteException;
+    public void sendMessageFromAdminToOnlineUsers(Message newMsg, ArrayList<Users> onlineUsersList) throws RemoteException;
+    //END SHIMAA
 }

@@ -428,7 +428,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public Map<String, Integer> getUsersByStatus() {
         Map<String, Integer> usersNumByStatusmap = new HashMap<String, Integer>();
         ResultSet resultSet = null;
-        try (PreparedStatement ps = connection.prepareStatement("Select Count(id),status from users where status in('Available','Offline') group by(status);;")) {
+        try (PreparedStatement ps = connection.prepareStatement("Select Count(id),status from users where status in('Available','Offline') group by(status);")) {
             resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 usersNumByStatusmap.put(resultSet.getString(2), resultSet.getInt(1));
@@ -562,6 +562,29 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             conn = connectionStrategy.getConnection();
             return conn;
 
+    }
+    @Override
+    public ArrayList<Users> getAllOnlineUsers() {
+        ArrayList<Users> onlineUserslist = new ArrayList<>();
+        ResultSet resultSet = null;
+        try (PreparedStatement ps = connection.prepareStatement("select id,phone_number,name,email,picture, password,gender,country,date_of_birth,bio,status FROM users  where status='Available' ;")) {
+            resultSet = ps.executeQuery();
+            while (resultSet.next()) {
+                onlineUserslist.add(extractUserFromResultSet(resultSet));
+            }
+
+        } catch (SQLException ex) {
+            logger.warning(ex.getSQLState());
+            logger.warning(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return onlineUserslist;
     }
 
 

@@ -97,7 +97,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void sendFile(String newMsg, RemoteInputStream remoteFileData, ChatRoom chatRoom, int userSendFileId) throws IOException,RemoteException {
-
+        System.out.println("in server file To send th fucken file");
         chatRoom.getUsers().forEach(user -> {
             if(user.getId()!=userSendFileId){
                 InputStream fileData= null;
@@ -118,7 +118,8 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
                 WritableByteChannel to = null;
                 try {
-                    to = FileChannel.open(Paths.get("D:\\iti java\\xmlAPI\\firstTask\\"+newMsg), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
+                    String home = System.getProperty("user.home");
+                    to = FileChannel.open(Paths.get(home +"/Downloads/"+ newMsg), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -326,7 +327,39 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
+    public void notifyNewGroup(ArrayList<Users> groupUsers) throws RemoteException {
+        System.out.println("Group list"+ groupUsers);
+        for (Users user : groupUsers) {
+            ClientInterface temp = getClient(user);
+            if (temp != null) {
+                System.out.println("recieve new group chat for"+user);
+                temp.recieveNewGroupChat(user);
+            }
+
+        }
+
+    }
+
+    @Override
     public void updateStatus(Users user, UserStatus newStatus) throws RemoteException {
         DAO.updateStatus(user,newStatus);
+    }
+
+    @Override
+    public void sendMessageFromAdminToOnlineUsers(Message newMsg, ArrayList<Users> onlineUsersList) throws RemoteException {
+        onlineUsersList.forEach(onlineUser -> {
+            clients.forEach(clientInterface -> {
+                try {
+                    System.out.println("onlineUser"+onlineUser);
+                    System.out.println("client Interface"+clientInterface.getUser().getPhoneNumber());
+                    if (clientInterface.getUser().getId()== onlineUser.getId()) {
+                        System.out.println("sending message to " + clientInterface.getUser());
+                        clientInterface.recieveMsgFromAdmin(newMsg,clientInterface.getUser());
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
     }
 }
