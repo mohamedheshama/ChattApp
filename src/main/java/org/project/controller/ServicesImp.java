@@ -60,6 +60,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public Boolean checkUserLogin(String phoneNumber, String password) throws RemoteException {
+        System.out.println("cheking user login"+ phoneNumber+password);
         return DAO.matchUserNameAndPassword(phoneNumber, password);
     }
 
@@ -326,13 +327,14 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
-    public void notifyNewGroup(ArrayList<Users> groupUsers) throws RemoteException {
-        System.out.println("Group list"+ groupUsers);
+    public void notifyNewGroup(ArrayList<Users> groupUsers,ChatRoom currentChatRoom) throws RemoteException {
+
         for (Users user : groupUsers) {
+            System.out.println("friends for: "+user.getName()+" are -->"+user.getFriends());
             ClientInterface temp = getClient(user);
             if (temp != null) {
                 System.out.println("recieve new group chat for"+user);
-                temp.recieveNewGroupChat(user);
+                temp.recieveNewGroupChat(user,currentChatRoom);
             }
 
         }
