@@ -96,7 +96,6 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void sendFile(String newMsg, RemoteInputStream remoteFileData, ChatRoom chatRoom, int userSendFileId) throws IOException,RemoteException {
-        System.out.println("in server file To send th fucken file");
         chatRoom.getUsers().forEach(user -> {
             if(user.getId()!=userSendFileId){
                 InputStream fileData= null;

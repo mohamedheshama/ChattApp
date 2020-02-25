@@ -19,6 +19,15 @@ public class Message implements Serializable {
     private String chatId;
     PublicKey publicKey;
     String encryptedAESKeyString;
+    private byte[] voiceMsg;
+
+    public byte[] getVoiceMsg() {
+        return voiceMsg;
+    }
+
+    public void setVoiceMsg(byte[] voiceMsg) {
+        this.voiceMsg = voiceMsg;
+    }
 
     public PublicKey getPublicKey() {
         return publicKey;
