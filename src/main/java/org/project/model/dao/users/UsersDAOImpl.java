@@ -86,9 +86,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public boolean updateUser(Users user) {
         // make sure no empty mandatory fields
         // make sure input is validated
-        ByteArrayInputStream bais=null;
+
         try {
-            bais = new ByteArrayInputStream(user.getDisplayPicture());
+            if(user.getDisplayPicture()!=null) {
+                ByteArrayInputStream bais = new ByteArrayInputStream(user.getDisplayPicture());
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -107,7 +109,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 rs.updateString("bio", user.getBio());
                 rs.updateString("status", String.valueOf(user.getStatus()));
                 rs.updateRow();
-                updatePicture(user);
+               // updatePicture(user);
                 return true;
             }
 
