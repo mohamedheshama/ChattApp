@@ -19,7 +19,7 @@ public class Users implements Serializable {
     private Date dateOfBirth;
     private String bio;
     transient private Blob picture;
-    transient private byte[] displayPicture;
+    private byte[] displayPicture;
     private UserStatus status;
     private ArrayList<Users> friends = new ArrayList<>();
     private ArrayList<Users> request_notifications = new ArrayList<>();
@@ -28,18 +28,23 @@ public class Users implements Serializable {
     public ArrayList<ChatRoom> getChatRooms() {
         return chatRooms;
     }
+
     public void setChatRooms(ArrayList<ChatRoom> chatRooms) {
         this.chatRooms = chatRooms;
     }
+
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
+
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
@@ -106,7 +111,6 @@ public class Users implements Serializable {
     }
 
     public byte[] getDisplayPicture() throws SQLException {
-        byte displayPicture[] = picture.getBytes(1, (int) picture.length());
         return displayPicture;
     }
 
@@ -116,6 +120,10 @@ public class Users implements Serializable {
 
     public void setRequest_notifications(ArrayList<Users> request_notifications) {
         this.request_notifications = request_notifications;
+    }
+
+    public void setDisplayPicture(byte[] displayPicture) {
+        this.displayPicture = displayPicture;
     }
 
     @Override

@@ -12,6 +12,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.project.controller.ServicesImp;
+import org.project.controller.ServicesInterface;
+import org.project.controller.admin_home.right_side.AnnouncementController;
 import org.project.controller.admin_home.right_side.DashboardController;
 import org.project.model.connection.ConnectionStrategy;
 import org.project.model.connection.MysqlConnection;
@@ -19,6 +22,10 @@ import org.project.model.dao.users.UsersDAOImpl;
 
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
@@ -40,19 +47,34 @@ public class MainAdminController implements Initializable {
     private boolean isMaximized = false;
     private ConnectionStrategy connectionStrategy;
     private UsersDAOImpl usersDAO;
+    private Registry reg;
+    private ServicesInterface servicesImp;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
+             reg = LocateRegistry.createRegistry(1260);
+             System.setProperty("java.rmi.server.hostname", "127.0.0.1"); //10.145.7.12 Uses the loopback address, 127.0.0.1, if yo
+             servicesImp = new ServicesImp();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         dashboardHbox.setStyle("-fx-background-color:#2A3F54");
         connectionStrategy = MysqlConnection.getInstance();
         try {
+            FXMLLoader loader;
             usersDAO = new UsersDAOImpl(connectionStrategy);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/dashboard_view.fxml"));
+             loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/dashboard_view.fxml"));
             dashboard = loader.load();
             DashboardController dashboardController = loader.getController();
             dashboardController.setUsersDAO(usersDAO);
             users = FXMLLoader.load(getClass().getResource("/org/project/views/admin_home/right_side/users_view.fxml"));
-            announcement = FXMLLoader.load(getClass().getResource("/org/project/views/admin_home/right_side/announcement_view.fxml"));
+             loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/announcement_view.fxml"));
+            announcement = loader.load();
+            AnnouncementController announcementController =loader.getController();
+            announcementController.setUsersDAO(usersDAO);
+            announcementController.setServicesInterface(servicesImp);
             setNode(dashboard);
         } catch (SQLException | IOException e) {
             e.printStackTrace();
@@ -99,20 +121,23 @@ public class MainAdminController implements Initializable {
     }
 
     @FXML
-    private void handleStartService(ActionEvent event) {
+    private void handleStartService(ActionEvent event) throws RemoteException {
         startServiceBtn.setDisable(true);
         startServiceBtn.setText("Service Started");
         stopServiceBtn.setDisable(false);
         stopServiceBtn.setText("Stop Service");
+        reg.rebind("ServerServices", servicesImp);
+        System.out.println("server no is running");
     }
 
     @FXML
-    private void handleStopService(ActionEvent event) {
+    private void handleStopService(ActionEvent event) throws RemoteException, NotBoundException {
         startServiceBtn.setDisable(false);
         startServiceBtn.setText("Start Service");
         stopServiceBtn.setDisable(true);
         stopServiceBtn.setText("Service Stoped");
-
+        reg.unbind("ServerServices");
+        System.out.println("server now is off");
     }
 
     public void handleMinimize(MouseEvent mouseEvent) {

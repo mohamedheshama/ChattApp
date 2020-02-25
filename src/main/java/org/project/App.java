@@ -10,9 +10,12 @@ import org.project.controller.ServicesImp;
 import org.project.controller.ServicesInterface;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * JavaFX App
@@ -41,8 +44,9 @@ public class App extends Application {
 
     private static void initializeRMI(){
         try {
+            Registry reg = LocateRegistry.createRegistry(3306);
+            System.setProperty("java.rmi.server.hostname", "localhost"); // Uses the loopback address, 127.0.0.1, if yo
             ServicesInterface servicesImp = new ServicesImp();
-            Registry reg = LocateRegistry.createRegistry(1260);
             reg.rebind("ServerServices", servicesImp);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -51,7 +55,10 @@ public class App extends Application {
 
 
     public static void main(String[] args) {
-        initializeRMI();
+
+        List<String> collect = Arrays.asList(Locale.getAvailableLocales()).stream().map(Locale::getDisplayCountry).filter(s -> !s.isEmpty()).sorted().collect(Collectors.toList());
+        System.out.println(collect);
+        //initializeRMI();
         launch();
 
     }
