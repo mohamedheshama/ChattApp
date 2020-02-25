@@ -83,46 +83,75 @@ public class UsersController implements Initializable {
     private void Update(ActionEvent event) {
 
         selectedIndexes = tableView.getSelectionModel().getSelectedItems();
-        usersDAOImpl.updateUser(selectedIndexes.get(0));
-
-         System.out.println("phone" + selectedIndexes.get(0).getPhoneNumber());
+        System.out.println("phone" + selectedIndexes.get(0).getPhoneNumber());
         System.out.println("name" + selectedIndexes.get(0).getName());
         System.out.println("email" + selectedIndexes.get(0).getEmail());
         System.out.println("password" + selectedIndexes.get(0).getPassword());
         System.out.println("id" + selectedIndexes.get(0).getId());
 
-         System.out.println("phone cell"+ phoneCol.getText());
-        System.out.println("You clicked me!");
+        if(!usersDAOImpl.isUserExist(selectedIndexes.get(0).getPhoneNumber())) {
+
+            usersDAOImpl.updateUser(selectedIndexes.get(0));
+
+            System.out.println("phone" + selectedIndexes.get(0).getPhoneNumber());
+            System.out.println("name" + selectedIndexes.get(0).getName());
+            System.out.println("email" + selectedIndexes.get(0).getEmail());
+            System.out.println("password" + selectedIndexes.get(0).getPassword());
+            System.out.println("id" + selectedIndexes.get(0).getId());
+
+            System.out.println("phone cell" + phoneCol.getText());
+            System.out.println("You clicked me!");
 //        label.setText("Hello World!");
+        }else {
+            Alert alertError = new Alert(Alert.AlertType.ERROR);
+            alertError.setTitle("User error");
+            alertError.setHeaderText("Error Alert ");
+            alertError.setContentText("User is already in database");
+            alertError.showAndWait();
+
+        }
+
     }
 
     @FXML
     private void Insert(ActionEvent event) {
         Users user = new Users();
-       if (validate(nameTxt.getText(),phoneTxt.getText(),emailTxt.getText(),passwordTxt.getText())) {
+
+        if(!usersDAOImpl.isUserExist(phoneTxt.getText())) {
+
+            if (validate(nameTxt.getText(), phoneTxt.getText(), emailTxt.getText(), passwordTxt.getText())) {
 
 
-           user.setName(nameTxt.getText());
-           user.setPhoneNumber(phoneTxt.getText());
-           user.setEmail(emailTxt.getText());
-           user.setPassword(passwordTxt.getText());
-           try {
-               usersDAOImpl.register(user);
+                user.setName(nameTxt.getText());
+                user.setPhoneNumber(phoneTxt.getText());
+                user.setEmail(emailTxt.getText());
+                user.setPassword(passwordTxt.getText());
+                try {
+                    usersDAOImpl.register(user);
 
 
-           } catch (UserAlreadyExistException ex) {
-               Logger.getLogger(UsersController.class.getName()).log(Level.SEVERE, null, ex);
-           }
-           valErrorlbl.setText("");
-           lists.add(user);
-       }else{
+                } catch (UserAlreadyExistException ex) {
+                    Logger.getLogger(UsersController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                valErrorlbl.setText("");
+                lists.add(user);
+            } else {
 
 
-           valErrorlbl.setText("Error Data Evaluated");
-           valErrorlbl.setStyle("-fx-border: 0px 0px 2px 0px ; -fx-border-color: #f60");
-       }
 
 
+                valErrorlbl.setText("Error Data Evaluated");
+                valErrorlbl.setStyle("-fx-border: 0px 0px 2px 0px ; -fx-border-color: #f60");
+            }
+
+        }else{
+
+            Alert alertError = new Alert(Alert.AlertType.ERROR);
+            alertError.setTitle("User error");
+            alertError.setHeaderText("Error Alert ");
+            alertError.setContentText("User is already in database");
+            alertError.showAndWait();
+        }
 
 
     }
@@ -184,16 +213,60 @@ public class UsersController implements Initializable {
             TablePosition<Users, String> pos = event.getTablePosition();
 
             String newFullName = event.getNewValue();
+            String olavalue=event.getOldValue();
+            System.out.println("old value"+olavalue);
             System.out.println("new val" + newFullName);
 
             int row = pos.getRow();
+            pos.getColumn();
+            pos.getRow();
             Users person = event.getTableView().getItems().get(row);
-            System.out.println("pass" + person.getPassword());
-            System.out.println("phone" + person.getPhoneNumber());
-            System.out.println("email" + person.getEmail());
-            System.out.println("use" + person.getName());
+            if(!usersDAOImpl.isUserExist(newFullName)) {
+                if (newFullName.matches("^01[0125]{1}(\\-)?[^0\\D]{1}\\d{7}$")) {
 
-            person.setPhoneNumber(newFullName);
+
+
+
+                    person.setPhoneNumber(newFullName);
+                    // usersDAOImpl.updateSinglePropertyUser(person,"phone_number");
+                    selectedIndexes = tableView.getSelectionModel().getSelectedItems();
+                    selectedIndexes.get(0).setPhoneNumber(newFullName);
+                    usersDAOImpl.updateUser(selectedIndexes.get(0));
+                    System.out.println("pass" + person.getPassword());
+                    System.out.println("phone" + person.getPhoneNumber());
+                    System.out.println("email" + person.getEmail());
+                    System.out.println("use" + person.getName());
+                } else {
+
+
+                    Alert alertError = new Alert(Alert.AlertType.ERROR);
+                    alertError.setTitle("User error");
+                    alertError.setHeaderText("Error Alert ");
+                    alertError.setContentText("phone pattern violated");
+                    alertError.showAndWait();
+                    tableView.getItems().set(tableView.getSelectionModel().getSelectedIndex(), person);
+                }
+            }else {
+
+
+                TableCell<Users,String> item = new TableCell<>();
+//Set the i-th item
+                tableView.getItems().set(tableView.getSelectionModel().getSelectedIndex(), person);
+              //  tableView.getSelectionModel().getSelectedItem().setPhoneNumber(olavalue);
+
+
+                Alert alertError = new Alert(Alert.AlertType.ERROR);
+                alertError.setTitle("User error");
+                alertError.setHeaderText("Error Alert ");
+                alertError.setContentText("User Already Exist");
+                alertError.showAndWait();
+
+                tableView.getItems().set(tableView.getSelectionModel().getSelectedIndex(), person);
+
+            }
+
+
+
         });
 
         useCol.setOnEditCommit((TableColumn.CellEditEvent<Users, String> event) -> {
@@ -204,12 +277,29 @@ public class UsersController implements Initializable {
 
             int row = pos.getRow();
             Users person = event.getTableView().getItems().get(row);
-            System.out.println("pass" + person.getPassword());
-           // System.out.println("phone" + person.getPhone());
-            System.out.println("email" + person.getEmail());
-           // System.out.println("use" + person.getUse());
 
-            person.setName(newFullName);
+           if( newFullName.matches("^[a-zA-Z_-][ a-zA-Z0-9_-]{6,14}$")) {
+
+               selectedIndexes = tableView.getSelectionModel().getSelectedItems();
+               selectedIndexes.get(0).setName(newFullName);
+               usersDAOImpl.updateUser(selectedIndexes.get(0));
+
+
+               System.out.println("pass" + person.getPassword());
+               // System.out.println("phone" + person.getPhone());
+               System.out.println("email" + person.getEmail());
+               // System.out.println("use" + person.getUse());
+           }else {
+               Alert alertError = new Alert(Alert.AlertType.ERROR);
+               alertError.setTitle("User error");
+               alertError.setHeaderText("Error Alert ");
+               alertError.setContentText("name pattern violated");
+               alertError.showAndWait();
+               tableView.getItems().set(tableView.getSelectionModel().getSelectedIndex(), person);
+
+
+           }
+
         });
 
 
@@ -222,12 +312,33 @@ public class UsersController implements Initializable {
 
             int row = pos.getRow();
             Users person = event.getTableView().getItems().get(row);
-            System.out.println("pass" + person.getPassword());
-           // System.out.println("phone" + person.getPhone());
-            System.out.println("email" + person.getEmail());
-            //System.out.println("use" + person.getUse());
+           if( newFullName.matches("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+\\b(com|net|eg)\\b$")){
 
-            person.setEmail(newFullName);
+               person.setEmail(newFullName);
+               selectedIndexes = tableView.getSelectionModel().getSelectedItems();
+               selectedIndexes.get(0).setEmail(newFullName);
+               usersDAOImpl.updateUser(selectedIndexes.get(0));
+
+
+               System.out.println("pass" + person.getPassword());
+               // System.out.println("phone" + person.getPhone());
+               System.out.println("email" + person.getEmail());
+               //System.out.println("use" + person.getUse());
+
+           }else{
+
+               Alert alertError = new Alert(Alert.AlertType.ERROR);
+               alertError.setTitle("User error");
+               alertError.setHeaderText("Error Alert ");
+               alertError.setContentText("Email pattern violated");
+               alertError.showAndWait();
+               tableView.getItems().set(tableView.getSelectionModel().getSelectedIndex(), person);
+
+
+           }
+
+
+
         });
 
 
@@ -237,15 +348,35 @@ public class UsersController implements Initializable {
 
             String newFullName = event.getNewValue();
             System.out.println("new val" + newFullName);
-
             int row = pos.getRow();
             Users person = event.getTableView().getItems().get(row);
-            System.out.println("pass" + person.getPassword());
-           // System.out.println("phone" + person.getPhone());
-            System.out.println("email" + person.getEmail());
-            //System.out.println("use" + person.getUse());
+            if(newFullName.matches("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9\\\\\\\\s]).{6,}")){
 
-            person.setPassword(newFullName);
+
+                person.setPassword(newFullName);
+
+                selectedIndexes = tableView.getSelectionModel().getSelectedItems();
+                selectedIndexes.get(0).setPassword(newFullName);
+                usersDAOImpl.updateUser(selectedIndexes.get(0));
+
+                System.out.println("pass" + person.getPassword());
+                // System.out.println("phone" + person.getPhone());
+                System.out.println("email" + person.getEmail());
+                //System.out.println("use" + person.getUse());
+
+
+            }else {
+
+                Alert alertError = new Alert(Alert.AlertType.ERROR);
+                alertError.setTitle("User error");
+                alertError.setHeaderText("Error Alert ");
+                alertError.setContentText("Password pattern violated");
+
+                alertError.showAndWait();
+                tableView.getItems().set(tableView.getSelectionModel().getSelectedIndex(), person);
+
+            }
+
         });
 
         lists=  usersDAOImpl.getUsers();

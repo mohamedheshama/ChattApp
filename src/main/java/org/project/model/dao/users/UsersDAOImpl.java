@@ -63,13 +63,14 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         if (isUserExist(user.getPhoneNumber()))
             throw new UserAlreadyExistException("User Already exist in our DB");
         //Check first if name exist using isUserExistMethod then register
-        String sql = "Insert into users (phone_number,name,email,password)" +
-                " values (?,?,?,?)";
+        String sql = "Insert into users (phone_number,name,email,password,country)" +
+                " values (?,?,?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, user.getPhoneNumber());
             preparedStatement.setString(2, user.getName());
             preparedStatement.setString(3, user.getEmail());
             preparedStatement.setString(4, user.getPassword());
+            preparedStatement.setString(5, user.getCountry());
             preparedStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -117,6 +118,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
         return false;
     }
+
 
     @Override
     public boolean deleteUSer(Users user) {

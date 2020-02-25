@@ -81,14 +81,14 @@
                         </font>
                     </TextField>
 
-                    <TextField fx:id="passwordTxt" prefHeight="25.0" prefWidth="122.0" promptText="Password" style="-fx-background-color: aliceBlue; -fx-background-radius: 20;">
+                    <PasswordField fx:id="passwordTxt" prefHeight="25.0" prefWidth="122.0" promptText="Password" style="-fx-background-color: aliceBlue; -fx-background-radius: 20;">
                         <HBox.margin>
                             <Insets right="50.0" />
                         </HBox.margin>
                         <font>
                             <Font name="System Bold" size="10.0" />
                         </font>
-                    </TextField>
+                    </PasswordField>
 
          </children>
       </HBox>
