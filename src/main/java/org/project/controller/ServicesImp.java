@@ -78,6 +78,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void notifyUpdate(Users users) throws RemoteException {
+        System.out.println("check user in serviece imp notify methode "+users);
         DAO.updateUser(users);
 
     }
