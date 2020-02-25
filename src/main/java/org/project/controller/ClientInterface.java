@@ -120,6 +120,8 @@ public interface ClientInterface extends Remote {
 
     void recieveNewGroupChat(Users user, ChatRoom currentChatRoom)throws  RemoteException;
 
+    void notifyUserLoggedOut(Users user) throws RemoteException;
+
 
     //END SHIMAA
 }

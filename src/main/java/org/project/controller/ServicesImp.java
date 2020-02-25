@@ -220,6 +220,11 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     public boolean changeUserStatus(Users users, UserStatus userStatus) throws RemoteException {
         return  DAO.updateStatus(users, userStatus);
     }
+
+    @Override
+    public void fileNotifyUser(Message newMsg, ChatRoom chatRoom, int userSendFileId) throws RemoteException {
+
+    }
 /*
     @Override
     public void notifyUser(Message newMsg, ChatRoom chatRoom) throws RemoteException {
@@ -339,6 +344,33 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
         }
 
+    }
+
+    @Override
+    public boolean logout(Users user) throws RemoteException {
+        updateStatus(user , UserStatus.valueOf("Offline"));
+        System.out.println("user : " + user.getName() + " is now offline");
+        notifyUpdatedNotifications(user.getFriends());
+        System.out.println("now user Friends are supposed to be notified");
+        ClientInterface clientInterface = getClient(user);
+        List<ChatRoom> groupChatRooms = chatRooms.stream().filter(chatRoom -> chatRoom.getUsers().size() > 2).collect(Collectors.toList());
+        groupChatRooms.stream().forEach(chatRoom -> {
+         chatRoom.getUsers().remove(user);
+         notifyUserLoggedOut(chatRoom , user);
+        });
+        System.out.println("count of the server clients " + clients.size());
+        return clients.remove(clientInterface);
+    }
+
+    private void notifyUserLoggedOut(ChatRoom chatRoom, Users user) {
+        chatRoom.getUsers().forEach(users -> {
+            ClientInterface clientInterface = getClient(users);
+            try {
+                clientInterface.notifyUserLoggedOut(user);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override

@@ -41,6 +41,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 user = extractUserFromResultSet(rs);
                 getUserFriends(user);
                 getUserNotifications(user);
+                updateStatus(user , UserStatus.valueOf("Available"));
                 return user;
             }
 
@@ -109,7 +110,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 rs.updateString("bio", user.getBio());
                 rs.updateString("status", String.valueOf(user.getStatus()));
                 rs.updateRow();
-               // updatePicture(user);
+                updatePicture(user);
                 return true;
             }
 
