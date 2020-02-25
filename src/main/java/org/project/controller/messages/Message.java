@@ -12,9 +12,19 @@ public class Message implements Serializable {
     private MessageType type;
     private String msg;
     private String fontFamily;
+
+    public String getFontPosture() {
+        return fontPosture;
+    }
+
+    public void setFontPosture(String fontPosture) {
+        this.fontPosture = fontPosture;
+    }
+
     private String textFill;
     private int fontSize;
     private String fontWeight;
+    private String fontPosture;
     private Users user;
     private String chatId;
     PublicKey publicKey;

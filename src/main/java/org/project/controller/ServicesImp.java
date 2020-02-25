@@ -60,6 +60,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public Boolean checkUserLogin(String phoneNumber, String password) throws RemoteException {
+        System.out.println("cheking user login"+ phoneNumber+password);
         return DAO.matchUserNameAndPassword(phoneNumber, password);
     }
 
@@ -78,6 +79,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void notifyUpdate(Users users) throws RemoteException {
+        System.out.println("check user in serviece imp notify methode "+users);
         DAO.updateUser(users);
 
     }
@@ -325,7 +327,40 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
+    public void notifyNewGroup(ArrayList<Users> groupUsers,ChatRoom currentChatRoom) throws RemoteException {
+
+        for (Users user : groupUsers) {
+            System.out.println("friends for: "+user.getName()+" are -->"+user.getFriends());
+            ClientInterface temp = getClient(user);
+            if (temp != null) {
+                System.out.println("recieve new group chat for"+user);
+                temp.recieveNewGroupChat(user,currentChatRoom);
+            }
+
+        }
+
+    }
+
+    @Override
     public void updateStatus(Users user, UserStatus newStatus) throws RemoteException {
         DAO.updateStatus(user,newStatus);
+    }
+
+    @Override
+    public void sendMessageFromAdminToOnlineUsers(Message newMsg, ArrayList<Users> onlineUsersList) throws RemoteException {
+        onlineUsersList.forEach(onlineUser -> {
+            clients.forEach(clientInterface -> {
+                try {
+                    System.out.println("onlineUser"+onlineUser);
+                    System.out.println("client Interface"+clientInterface.getUser().getPhoneNumber());
+                    if (clientInterface.getUser().getId()== onlineUser.getId()) {
+                        System.out.println("sending message to " + clientInterface.getUser());
+                        clientInterface.recieveMsgFromAdmin(newMsg,clientInterface.getUser());
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
     }
 }

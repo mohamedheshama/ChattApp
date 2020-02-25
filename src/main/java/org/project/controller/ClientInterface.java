@@ -7,6 +7,7 @@ import org.project.model.dao.users.Users;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ClientInterface extends Remote {
@@ -115,6 +116,9 @@ public interface ClientInterface extends Remote {
 
 
     void recieveContactRequest(Users user) throws  RemoteException;
+    public void recieveMsgFromAdmin(Message newMsg, Users onlineUser) throws RemoteException;
+
+    void recieveNewGroupChat(Users user, ChatRoom currentChatRoom)throws  RemoteException;
 
 
     //END SHIMAA

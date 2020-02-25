@@ -49,4 +49,5 @@ public interface UsersDAO {
     boolean addContactRequest(List<String> contactList, Users user);
 
     List<String> getUsersList(int userId);
+    ArrayList<Users> getAllOnlineUsers();
 }
