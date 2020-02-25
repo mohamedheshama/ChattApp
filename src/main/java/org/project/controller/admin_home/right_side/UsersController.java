@@ -62,7 +62,7 @@ public class UsersController implements Initializable {
     String originPhone;
 
     List<Users> list = null;
-    ObservableList<Users> lists = FXCollections.observableArrayList();
+    ObservableList<Users> listUsers = FXCollections.observableArrayList();
     ObservableList<Users> selectedIndexes = FXCollections.observableArrayList();
     //    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 //    static final String DB_URL = "jdbc:mysql://localhost/first";
@@ -134,13 +134,13 @@ public class UsersController implements Initializable {
                     Logger.getLogger(UsersController.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 valErrorlbl.setText("");
-                lists.add(user);
+                listUsers.add(user);
             } else {
 
 
 
 
-                valErrorlbl.setText("Error Data Evaluated");
+                valErrorlbl.setText("Data Evaluated the validation");
                 valErrorlbl.setStyle("-fx-border: 0px 0px 2px 0px ; -fx-border-color: #f60");
             }
 
@@ -379,9 +379,9 @@ public class UsersController implements Initializable {
 
         });
 
-        lists=  usersDAOImpl.getUsers();
+        listUsers=  usersDAOImpl.getUsers();
 
-        tableView.setItems(lists);
+        tableView.setItems(listUsers);
 
 
 
