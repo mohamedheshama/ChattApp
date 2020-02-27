@@ -1,5 +1,7 @@
 package org.project.controller.admin_home.right_side;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,10 +17,10 @@ import org.project.model.dao.users.UsersDAOImpl;
 
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class UsersController implements Initializable {
 
@@ -57,6 +59,11 @@ public class UsersController implements Initializable {
     private TableColumn<Users, String> passwordCol;
 
     @FXML
+    private TableColumn<Users, String> countryCol;
+
+    @FXML
+    private ChoiceBox choicebox;
+    @FXML
     private TableView<Users> tableView;
 
     String originPhone;
@@ -64,6 +71,7 @@ public class UsersController implements Initializable {
     List<Users> list = null;
     ObservableList<Users> listUsers = FXCollections.observableArrayList();
     ObservableList<Users> selectedIndexes = FXCollections.observableArrayList();
+    ObservableList<String> AllCountries = FXCollections.observableArrayList();
     //    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 //    static final String DB_URL = "jdbc:mysql://localhost/first";
 //    private Connection conn = null;
@@ -126,6 +134,9 @@ public class UsersController implements Initializable {
                 user.setPhoneNumber(phoneTxt.getText());
                 user.setEmail(emailTxt.getText());
                 user.setPassword(passwordTxt.getText());
+                System.out.println("country"+(choicebox.getSelectionModel().getSelectedItem().toString()));
+                user.setCountry(choicebox.getSelectionModel().getSelectedItem().toString());
+
                 try {
                     usersDAOImpl.register(user);
 
@@ -134,7 +145,27 @@ public class UsersController implements Initializable {
                     Logger.getLogger(UsersController.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 valErrorlbl.setText("");
-                listUsers.add(user);
+                System.out.println("userid "+user.getId());
+                Users users=listUsers.sorted().get(listUsers.size()-1);
+                System.out.println("before user id "+ users.getId());
+
+
+               Users users1=listUsers.get(listUsers.size()-1);
+               System.out.println("before user id "+ users1.getId());
+
+                user.setId(users1.getId()+1);
+
+                listUsers=  usersDAOImpl.getUsers();
+
+                tableView.setItems(listUsers);
+
+                nameTxt.setText("");
+                phoneTxt.setText("");
+                emailTxt.setText("");
+                passwordTxt.setText("");
+                choicebox.setValue("Egypt");
+
+
             } else {
 
 
@@ -190,6 +221,7 @@ public class UsersController implements Initializable {
         emailCol.setCellFactory(TextFieldTableCell.forTableColumn());
         passwordCol.setCellFactory(TextFieldTableCell.forTableColumn());
         useCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        countryCol.setCellFactory(TextFieldTableCell.forTableColumn());
         //tableView.getColumns().add( dateOfBirthColumn);
 
         phoneCol.setCellValueFactory(
@@ -207,6 +239,10 @@ public class UsersController implements Initializable {
         useCol.setCellValueFactory(
                 new PropertyValueFactory<Users, String>("name")
         );
+        countryCol.setCellValueFactory(
+                new PropertyValueFactory<Users, String>("country")
+        );
+
 
         //  tableView.getSelectionModel().get
         phoneCol.setOnEditCommit((TableColumn.CellEditEvent<Users, String> event) -> {
@@ -357,6 +393,8 @@ public class UsersController implements Initializable {
 
                 selectedIndexes = tableView.getSelectionModel().getSelectedItems();
                 selectedIndexes.get(0).setPassword(newFullName);
+
+                System.out.println("id when update "+selectedIndexes.get(0).getId()+"gen "+selectedIndexes.get(0).getGender());
                 usersDAOImpl.updateUser(selectedIndexes.get(0));
 
                 System.out.println("pass" + person.getPassword());
@@ -379,9 +417,94 @@ public class UsersController implements Initializable {
 
         });
 
+        countryCol.setOnEditCommit((TableColumn.CellEditEvent<Users, String> event) -> {
+            TablePosition<Users, String> pos = event.getTablePosition();
+
+            String newFullName = event.getNewValue();
+            System.out.println("new val" + newFullName);
+            int row = pos.getRow();
+            Users person = event.getTableView().getItems().get(row);
+
+            boolean iterator=AllCountries.contains(newFullName);
+            System.out.println("iter"+iterator);
+
+
+            if(iterator){
+
+
+                person.setCountry(newFullName);
+
+                selectedIndexes = tableView.getSelectionModel().getSelectedItems();
+                selectedIndexes.get(0).setCountry(newFullName);
+                usersDAOImpl.updateUser(selectedIndexes.get(0));
+                System.out.println("updated1"+selectedIndexes.get(0).getId());
+                System.out.println("updated1"+person.getId());
+
+                System.out.println("pass" + person.getPassword());
+                // System.out.println("phone" + person.getPhone());
+                System.out.println("email" + person.getEmail());
+                //System.out.println("use" + person.getUse());
+
+
+            }else {
+
+                Alert alertError = new Alert(Alert.AlertType.ERROR);
+                alertError.setTitle("User error");
+                alertError.setHeaderText("Error Alert ");
+                alertError.setContentText("Country doesn't exist");
+
+                alertError.showAndWait();
+                tableView.getItems().set(tableView.getSelectionModel().getSelectedIndex(), person);
+
+            }
+
+        });
+
+
+
+
+
+
+
+
+
+
+        List<String> collect = Arrays.asList(Locale.getAvailableLocales()).stream().map(Locale::getDisplayCountry).filter(s -> !s.isEmpty()).sorted().collect(Collectors.toList());
+        boolean iterator=collect.contains("Egypt");
+        System.out.println("iter"+iterator);
+        AllCountries = FXCollections.observableArrayList(collect);
+
+        System.out.println(collect);
+        choicebox.setItems(AllCountries);
+        choicebox.setValue("Egypt");
+
+        // ChoiceBox c = new ChoiceBox(FXCollections.observableArrayList(st));
+
+        // add a listener
+        choicebox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+
+            // if the item of the list is changed
+            public void changed(ObservableValue ov, Number value, Number new_value) {
+
+                // set the text for the label to the selected item
+                choicebox.setValue(new_value.intValue());
+                System.out.println(new_value.intValue());
+                System.out.println("choice"+choicebox.getSelectionModel().getSelectedItem());
+
+                //l1.setText(st[new_value.intValue()] + " selected");
+            }
+        });
+
+        System.out.println("choice"+choicebox.getSelectionModel().getSelectedItem());
+
+
+
+
+
         listUsers=  usersDAOImpl.getUsers();
 
         tableView.setItems(listUsers);
+
 
 
 
