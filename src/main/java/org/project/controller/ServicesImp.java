@@ -2,6 +2,7 @@ package org.project.controller;
 
 import com.healthmarketscience.rmiio.RemoteInputStream;
 import com.healthmarketscience.rmiio.RemoteInputStreamClient;
+import org.project.controller.admin_home.MainAdminController;
 import org.project.controller.messages.Message;
 import org.project.model.ChatRoom;
 import org.project.model.connection.MysqlConnection;
@@ -31,9 +32,12 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     UsersDAO DAO;
     CopyOnWriteArrayList<ClientInterface> clients;
     CopyOnWriteArrayList<ChatRoom> chatRooms;
+    MainAdminController mainAdminController;
 
-    public ServicesImp() throws RemoteException {
+    public ServicesImp(MainAdminController mainAdminController) throws RemoteException {
+
         super(1260);
+        this.mainAdminController = mainAdminController;
         try {
             DAO = new UsersDAOImpl(MysqlConnection.getInstance());
             clients = new CopyOnWriteArrayList<>();
@@ -51,7 +55,12 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     @Override
     public Boolean register(Users user) throws RemoteException, SQLException {
         System.out.println(user + " is registered");
-        return DAO.register(user);
+        boolean isLogged = false;
+        if (DAO.register(user)) {
+            isLogged = true;
+            mainAdminController.updateDashboard();
+        }
+        return isLogged;
     }
 
     @Override
@@ -75,6 +84,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     public void notifyUpdate(Users users) throws RemoteException {
         System.out.println("check user in serviece imp notify methode " + users);
         DAO.updateUser(users);
+        mainAdminController.updateDashboard();
 
     }
     /*@Override
@@ -88,7 +98,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void sendFile(String newMsg, RemoteInputStream remoteFileData, ChatRoom chatRoom, int userSendFileId) throws IOException, RemoteException {
-       // todo download file to server
+        // todo download file to server
         //todo then send file to reciever
 
         chatRoom.getUsers().forEach(user -> {
@@ -109,7 +119,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
                         buffer.flip();
                         while (buffer.hasRemaining()) {
                             System.out.println("server write");
-                                to.write(buffer);
+                            to.write(buffer);
                         }
                         buffer.clear();
                     }
@@ -158,6 +168,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     public void registerClient(ClientInterface clientImp) throws RemoteException {
         System.out.println("in server register client");
         clients.add(clientImp);
+        mainAdminController.updateDashboard();
         System.out.println("new Client is assigned" + clientImp.getUser());
     }
 
@@ -302,13 +313,13 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
                 System.out.println("recieve new group chat for" + user);
                 temp.recieveNewGroupChat(user, currentChatRoom);
             }
-
         }
 
     }
 
     @Override
     public boolean logout(Users user) throws RemoteException {
+        boolean isLoggedout = false;
         updateStatus(user, UserStatus.valueOf("Offline"));
         System.out.println("user : " + user.getName() + " is now offline");
         notifyUpdatedNotifications(user.getFriends());
@@ -320,7 +331,11 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
             notifyUserLoggedOut(chatRoom, user);
         });
         System.out.println("count of the server clients " + clients.size());
-        return clients.remove(clientInterface);
+        if (clients.remove(clientInterface)) {
+            isLoggedout = true;
+            mainAdminController.updateDashboard();
+        }
+        return isLoggedout;
     }
 
     @Override
@@ -343,6 +358,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     @Override
     public void updateStatus(Users user, UserStatus newStatus) throws RemoteException {
         DAO.updateStatus(user, newStatus);
+        mainAdminController.updateDashboard();
     }
 
     @Override

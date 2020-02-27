@@ -1,6 +1,7 @@
 package org.project.controller.admin_home;
 
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -49,37 +50,48 @@ public class MainAdminController implements Initializable {
     private UsersDAOImpl usersDAO;
     private Registry reg;
     private ServicesInterface servicesImp;
-
+    private DashboardController dashboardController;
+    private FXMLLoader loader;
+    private boolean isDashboardScreen = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-             reg = LocateRegistry.createRegistry(1260);
-             System.setProperty("java.rmi.server.hostname", "127.0.0.1"); //10.145.7.12 Uses the loopback address, 127.0.0.1, if yo
-             servicesImp = new ServicesImp();
+            reg = LocateRegistry.createRegistry(1260);
+            System.setProperty("java.rmi.server.hostname", "127.0.0.1"); //10.145.7.12 Uses the loopback address, 127.0.0.1, if yo
+            servicesImp = new ServicesImp(this);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
         dashboardHbox.setStyle("-fx-background-color:#2A3F54");
         connectionStrategy = MysqlConnection.getInstance();
         try {
-            FXMLLoader loader;
+
             usersDAO = new UsersDAOImpl(connectionStrategy);
-             loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/dashboard_view.fxml"));
-            dashboard = loader.load();
-            DashboardController dashboardController = loader.getController();
-            dashboardController.setUsersDAO(usersDAO);
             users = FXMLLoader.load(getClass().getResource("/org/project/views/admin_home/right_side/users_view.fxml"));
-             loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/announcement_view.fxml"));
+            loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/announcement_view.fxml"));
             announcement = loader.load();
-            AnnouncementController announcementController =loader.getController();
+            AnnouncementController announcementController = loader.getController();
             announcementController.setUsersDAO(usersDAO);
             announcementController.setServicesInterface(servicesImp);
-            setNode(dashboard);
+            setNode(getDashboardVbox());
         } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
 
+    }
+
+    private VBox getDashboardVbox() {
+        isDashboardScreen = true;
+        loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/dashboard_view.fxml"));
+        try {
+            dashboard = loader.load();
+            dashboardController = loader.getController();
+            dashboardController.setUsersDAO(usersDAO);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return dashboard;
     }
 
     //Set selected node to a content holder
@@ -100,12 +112,13 @@ public class MainAdminController implements Initializable {
         dashboardHbox.setStyle("-fx-background-color:#2A3F54");
         usersHbox.setStyle("-fx-background-color:#3e3e3e");
         announcementHbox.setStyle("-fx-background-color: #3e3e3e");
-        setNode(dashboard);
+        setNode(getDashboardVbox());
 
     }
 
     @FXML
     private void handleSwitchUsers(ActionEvent event) {
+        isDashboardScreen = false;
         dashboardHbox.setStyle("-fx-background-color:#3e3e3e");
         usersHbox.setStyle("-fx-background-color:#2A3F54");
         announcementHbox.setStyle("-fx-background-color: #3e3e3e");
@@ -114,6 +127,7 @@ public class MainAdminController implements Initializable {
 
     @FXML
     private void handleSwitchAnnouncement(ActionEvent event) {
+        isDashboardScreen = false;
         dashboardHbox.setStyle("-fx-background-color: #3e3e3e");
         usersHbox.setStyle("-fx-background-color: #3e3e3e");
         announcementHbox.setStyle("-fx-background-color:#2A3F54");
@@ -173,5 +187,13 @@ public class MainAdminController implements Initializable {
     public void pressed(MouseEvent mouseEvent) {
         x = mouseEvent.getSceneX();
         y = mouseEvent.getSceneY();
+    }
+
+    public void updateDashboard() {
+        Platform.runLater(() -> {
+            if (isDashboardScreen) {
+                setNode(getDashboardVbox());
+            }
+        });
     }
 }
