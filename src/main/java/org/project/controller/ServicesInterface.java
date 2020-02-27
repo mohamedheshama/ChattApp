@@ -148,5 +148,9 @@ public interface ServicesInterface extends Remote {
 
     public void fileSendAccepted(Users chatRoom) throws RemoteException;
 
+    void notifyServerisDown() throws RemoteException;
+
+    void notifyServerisup() throws RemoteException;
+
     //END SHIMAA
 }
