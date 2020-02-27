@@ -21,6 +21,7 @@ public interface ClientInterface extends Remote {
     void addChatRoom(ChatRoom chatRoomExist) throws RemoteException;
 
     void recieveUpdatedNotifications(Users user) throws RemoteException;
+    void sendFile() throws RemoteException;
     // start hend
 
 
@@ -118,7 +119,9 @@ public interface ClientInterface extends Remote {
     void recieveContactRequest(Users user) throws  RemoteException;
     public void recieveMsgFromAdmin(Message newMsg, Users onlineUser) throws RemoteException;
 
-    void recieveNewGroupChat(Users user)throws  RemoteException;
+    void recieveNewGroupChat(Users user, ChatRoom currentChatRoom)throws  RemoteException;
+
+    void notifyUserLoggedOut(Users user) throws RemoteException;
 
 
     //END SHIMAA

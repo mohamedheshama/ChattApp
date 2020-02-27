@@ -41,6 +41,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 user = extractUserFromResultSet(rs);
                 getUserFriends(user);
                 getUserNotifications(user);
+                updateStatus(user , UserStatus.valueOf("Available"));
                 return user;
             }
 
@@ -110,7 +111,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 rs.updateString("bio", user.getBio());
                 rs.updateString("status", String.valueOf(user.getStatus()));
                 rs.updateRow();
-               // updatePicture(user);
+                updatePicture(user);
                 return true;
             }
 
@@ -180,11 +181,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     @Override
     public ArrayList<Users> getUserFriends(Users user) {
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status" +
+        try (PreparedStatement ps = connection.prepareStatement("SELECT u.id, u.name , u.phone_number, u.status,u.picture" +
                 " FROM users u JOIN friends f on f.friend_id=u.id" +
                 " where f.user_id=? AND f.friend_status=?" +
                 " union" +
-                " SELECT u.id, u.name , u.phone_number, u.status" +
+                " SELECT u.id, u.name , u.phone_number, u.status,u.picture" +
                 " FROM users u JOIN friends f on f.user_id=u.id" +
                 " where f.friend_id=? AND f.friend_status=?;");) {
             ps.setInt(1, user.getId());
@@ -245,17 +246,16 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     @Override
     public ArrayList<Users> getUserNotifications(Users user) {
         ResultSet rs = null;
-        try (PreparedStatement ps = connection.prepareStatement("select u.id, u.name , u.phone_number, u.status FROM users u JOIN friends f on u.id=f.user_id where f.friend_id=? AND f.friend_status=? ;");) {
+        try (PreparedStatement ps = connection.prepareStatement("select u.id, u.name , u.phone_number, u.status, u.picture FROM users u JOIN friends f on u.id=f.user_id where f.friend_id=? AND f.friend_status=? ;");) {
             ps.setInt(1, user.getId());
             ps.setString(2, String.valueOf(RequestStatus.Pending));
             rs = ps.executeQuery();
             user.getRequest_notifications().clear();
             while (rs.next()) {
                 Users friend =  extractFriendFromResultSet(rs);
-
-                //friend.setFriend(extractFriendFromResultSet(rs));
                 user.getRequest_notifications().add(friend);
             }
+            System.out.println("user notifications for"+user.getName()+":"+user.getRequest_notifications());
             return user.getRequest_notifications();
 
         } catch (SQLException ex) {
@@ -285,7 +285,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         user.setDateOfBirth(rs.getDate("date_of_birth"));
         user.setBio(rs.getString("bio"));
         user.setStatus(UserStatus.valueOf(rs.getString("status")));
-        user.setPicture(rs.getBlob("picture"));
+        user.setDisplayPicture(rs.getBytes("picture"));
         return user;
     }
 
@@ -295,7 +295,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         user.setPhoneNumber(rs.getString("phone_number"));
         user.setName(rs.getString("name"));
         user.setStatus(UserStatus.valueOf(rs.getString("status")));
-        //user.setDisplayPicture(rs.getBytes("picture"));
+        user.setDisplayPicture(rs.getBytes("picture"));
 
         System.out.println("inside get frinds bytes"+user.getDisplayPicture());
 
@@ -482,9 +482,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public List<String> getUsersList(int userId) {
         List<String> usersList = new ArrayList<>();
         ResultSet resultSet = null;
-        try (PreparedStatement preparedStatement = connection.prepareStatement("select phone_number from users  where id != ALL (select friend_id from friends where user_id = ? And friend_status IN ('Accepted','Pending' ) ) And id != ?;")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select phone_number from users  where id != ALL ( select user_id from friends where friend_id = ?  And friend_status in('Accepted') union  select friend_id from friends where (user_id = ? ) And friend_status  in ('Accepted','Pending')) and id != ?",
+                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             preparedStatement.setInt(1, userId);
             preparedStatement.setInt(2, userId);
+            preparedStatement.setInt(3, userId);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 usersList.add(resultSet.getString(1));
