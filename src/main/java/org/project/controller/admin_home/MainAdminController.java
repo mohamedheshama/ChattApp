@@ -63,7 +63,7 @@ public class MainAdminController implements Initializable {
         try {
             reg = LocateRegistry.createRegistry(1260);
             System.setProperty("java.rmi.server.hostname", "127.0.0.1"); //10.145.7.12 Uses the loopback address, 127.0.0.1, if yo
-            servicesImp = new ServicesImp();
+            servicesImp = new ServicesImp(this);
             reg = LocateRegistry.createRegistry(1260);
             System.setProperty("java.rmi.server.hostname", "127.0.0.1"); //10.145.7.12 Uses the loopback address, 127.0.0.1, if yo
             servicesImp = new ServicesImp(this);
