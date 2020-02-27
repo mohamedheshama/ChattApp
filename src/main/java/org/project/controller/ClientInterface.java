@@ -122,6 +122,12 @@ public interface ClientInterface extends Remote {
 
     void notifyUserLoggedOut(Users user) throws RemoteException;
 
+    void recieveServerDown() throws RemoteException;
+
+    void recieveServerUp()throws RemoteException;
+
+    void isAlive() throws RemoteException;
+
 
     //END SHIMAA
 }

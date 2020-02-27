@@ -146,5 +146,9 @@ public interface ServicesInterface extends Remote {
 
     boolean logout(Users user) throws RemoteException;
 
+    void notifyServerisDown() throws RemoteException;
+
+    void notifyServerisup() throws RemoteException;
+
     //END SHIMAA
 }

@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -31,6 +32,8 @@ import java.util.ResourceBundle;
 
 public class MainAdminController implements Initializable {
     @FXML
+    public AnchorPane mainPage;
+    @FXML
     private VBox rightContentPane;
     @FXML
     private HBox dashboardHbox;
@@ -53,10 +56,11 @@ public class MainAdminController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         try {
-             reg = LocateRegistry.createRegistry(1260);
-             System.setProperty("java.rmi.server.hostname", "127.0.0.1"); //10.145.7.12 Uses the loopback address, 127.0.0.1, if yo
-             servicesImp = new ServicesImp();
+            reg = LocateRegistry.createRegistry(1260);
+            System.setProperty("java.rmi.server.hostname", "127.0.0.1"); //10.145.7.12 Uses the loopback address, 127.0.0.1, if yo
+            servicesImp = new ServicesImp();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -65,20 +69,21 @@ public class MainAdminController implements Initializable {
         try {
             FXMLLoader loader;
             usersDAO = new UsersDAOImpl(connectionStrategy);
-             loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/dashboard_view.fxml"));
+            loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/dashboard_view.fxml"));
             dashboard = loader.load();
             DashboardController dashboardController = loader.getController();
             dashboardController.setUsersDAO(usersDAO);
             users = FXMLLoader.load(getClass().getResource("/org/project/views/admin_home/right_side/users_view.fxml"));
-             loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/announcement_view.fxml"));
+            loader = new FXMLLoader(getClass().getResource("/org/project/views/admin_home/right_side/announcement_view.fxml"));
             announcement = loader.load();
-            AnnouncementController announcementController =loader.getController();
+            AnnouncementController announcementController = loader.getController();
             announcementController.setUsersDAO(usersDAO);
             announcementController.setServicesInterface(servicesImp);
             setNode(dashboard);
         } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
+
 
     }
 
@@ -122,6 +127,7 @@ public class MainAdminController implements Initializable {
 
     @FXML
     private void handleStartService(ActionEvent event) throws RemoteException {
+        servicesImp.notifyServerisup();
         startServiceBtn.setDisable(true);
         startServiceBtn.setText("Service Started");
         stopServiceBtn.setDisable(false);
@@ -132,6 +138,7 @@ public class MainAdminController implements Initializable {
 
     @FXML
     private void handleStopService(ActionEvent event) throws RemoteException, NotBoundException {
+        stopServer();
         startServiceBtn.setDisable(false);
         startServiceBtn.setText("Start Service");
         stopServiceBtn.setDisable(true);
@@ -159,6 +166,11 @@ public class MainAdminController implements Initializable {
     }
 
     public void handleClose(MouseEvent mouseEvent) {
+      /*  ((Stage) mainPage.getScene().getWindow()).setOnCloseRequest(windowEvent -> {
+
+        });*/
+        stopServer();
+
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
     }
@@ -173,5 +185,16 @@ public class MainAdminController implements Initializable {
     public void pressed(MouseEvent mouseEvent) {
         x = mouseEvent.getSceneX();
         y = mouseEvent.getSceneY();
+    }
+
+    public void stopServer() {
+
+        try {
+            System.out.println("now closing");
+            servicesImp.notifyServerisDown();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
 }
