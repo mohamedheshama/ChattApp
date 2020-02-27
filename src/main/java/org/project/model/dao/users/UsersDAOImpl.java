@@ -480,9 +480,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public List<String> getUsersList(int userId) {
         List<String> usersList = new ArrayList<>();
         ResultSet resultSet = null;
-        try (PreparedStatement preparedStatement = connection.prepareStatement("select phone_number from users  where id != ALL (select friend_id from friends where user_id = ? And friend_status IN ('Accepted','Pending' ) ) And id != ?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select phone_number from users  where id != ALL ( select user_id from friends where friend_id = ?  And friend_status in('Accepted') union  select friend_id from friends where (user_id = ? ) And friend_status  in ('Accepted','Pending')) and id != ?",
+                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             preparedStatement.setInt(1, userId);
             preparedStatement.setInt(2, userId);
+            preparedStatement.setInt(3, userId);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 usersList.add(resultSet.getString(1));

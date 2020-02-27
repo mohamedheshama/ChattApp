@@ -27,9 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -39,9 +36,12 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     UsersDAO DAO;
     CopyOnWriteArrayList<ClientInterface> clients;
     CopyOnWriteArrayList<ChatRoom> chatRooms;
+    MainAdminController mainAdminController;
 
-    public ServicesImp() throws RemoteException {
+    public ServicesImp(MainAdminController mainAdminController) throws RemoteException {
+
         super(1260);
+        this.mainAdminController = mainAdminController;
         try {
             DAO = new UsersDAOImpl(MysqlConnection.getInstance());
             clients = new CopyOnWriteArrayList<>();
@@ -71,7 +71,12 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     @Override
     public Boolean register(Users user) throws RemoteException, SQLException {
         System.out.println(user + " is registered");
-        return DAO.register(user);
+        boolean isLogged = false;
+        if (DAO.register(user)) {
+            isLogged = true;
+            mainAdminController.updateDashboard();
+        }
+        return isLogged;
     }
 
     @Override
@@ -91,10 +96,13 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
 
+
+
     @Override
     public void notifyUpdate(Users users) throws RemoteException {
         System.out.println("check user in serviece imp notify methode " + users);
         DAO.updateUser(users);
+        mainAdminController.updateDashboard();
 
     }
     /*@Override
@@ -106,67 +114,52 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }*/
 
 
+
+
+
+
     @Override
     public void sendFile(String newMsg, RemoteInputStream remoteFileData, ChatRoom chatRoom, int userSendFileId) throws IOException, RemoteException {
+        // todo download file to server
+        //todo then send file to reciever
+
         chatRoom.getUsers().forEach(user -> {
             if (user.getId() != userSendFileId) {
                 InputStream fileData = null;
+                ByteBuffer buffer = null;
+                WritableByteChannel to = null;
+                ReadableByteChannel from = null;
                 try {
                     fileData = RemoteInputStreamClient.wrap(remoteFileData);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                System.out.println("server 2 write");
-                ReadableByteChannel from = Channels.newChannel(fileData);
-                ByteBuffer buffer = null;
-                try {
+                    System.out.println("server 2 write" + user.getName());
+                    from = Channels.newChannel(fileData);
+                    System.out.println(fileData + "aasaassassasssaaasssaassssaassssaasasasasassaas");
                     buffer = ByteBuffer.allocateDirect(fileData.available());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-                WritableByteChannel to = null;
-                try {
                     String home = System.getProperty("user.home");
                     to = FileChannel.open(Paths.get(home + "/Downloads/" + newMsg), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
+                    while ((from.read(buffer) != -1)) {
+                        buffer.flip();
+                        while (buffer.hasRemaining()) {
+                            System.out.println("server write");
+                            to.write(buffer);
+                        }
+                        buffer.clear();
+                    }
+
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-                while (true) {
+                } finally {
                     try {
-                        if (!(from.read(buffer) != -1)) break;
+                        to.close();
+                        from.close();
+                        fileData.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    buffer.flip();
-                    while (buffer.hasRemaining()) {
-                        System.out.println("server write");
-                        try {
-                            to.write(buffer);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    buffer.clear();
                 }
-                try {
-                    from.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    to.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    fileData.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
             }
+
+
 
 
         });
@@ -175,11 +168,14 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
 
+
+
+
     @Override
     public void sendMessage(Message newMsg, ChatRoom chatRoom) throws RemoteException {
 
         chatRooms.forEach(chatRoom1 -> {
-            if (chatRoom1.getChatRoomId().equals(chatRoom.getChatRoomId())) {
+            if (chatRoom1.getChatRoomId().equals(chatRoom.getChatRoomId())){
                 chatRoom1.getChatRoomMessage().add(newMsg);
             }
         });
@@ -188,7 +184,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
                 try {
                     if (clientInterface.getUser().getId() == user.getId()) {
                         System.out.println("sending message to " + clientInterface.getUser());
-                        clientInterface.recieveMsg(newMsg, chatRoom);
+                        clientInterface.recieveMsg(newMsg , chatRoom);
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -201,6 +197,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     public void registerClient(ClientInterface clientImp) throws RemoteException {
         System.out.println("in server register client");
         clients.add(clientImp);
+        mainAdminController.updateDashboard();
         System.out.println("new Client is assigned" + clientImp.getUser());
     }
 
@@ -209,20 +206,20 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
         List<Integer> collect = chatroomUsers.stream().map(Users::getId).collect(Collectors.toList());
         String chatRoomId = collect.stream().sorted().collect(Collectors.toList()).toString();
         ChatRoom chatRoomExist = checkChatRoomExist(chatRoomId);
-        if (chatRoomExist != null) {
+        if (chatRoomExist != null){
             return chatRoomExist;
         }
         chatRoomExist = new ChatRoom();
         chatRoomExist.setChatRoomId(chatRoomId);
         chatRoomExist.setUsers(chatroomUsers);
         chatRooms.add(chatRoomExist);
-        addChatRoomToAllClients(chatroomUsers, chatRoomExist);
+        addChatRoomToAllClients(chatroomUsers , chatRoomExist);
         return chatRoomExist;
     }
 
     @Override
     public boolean changeUserStatus(Users users, UserStatus userStatus) throws RemoteException {
-        return DAO.updateStatus(users, userStatus);
+        return  DAO.updateStatus(users, userStatus);
     }
 
     @Override
@@ -244,7 +241,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public boolean declineRequest(Users currentUser, Users friend) throws RemoteException {
-        return DAO.declineRequest(currentUser, friend);
+        return DAO.declineRequest(currentUser,friend);
     }
 
 
@@ -260,7 +257,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     private ChatRoom checkChatRoomExist(String chatroomUser) {
         for (ChatRoom chatRoom : chatRooms) {
-            if (chatRoom.getChatRoomId().equals(chatroomUser)) {
+            if (chatRoom.getChatRoomId().equals(chatroomUser)){
                 return chatRoom;
             }
         }
@@ -296,28 +293,28 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
 
     }
-
     @Override
-    public void addUsersToFriedNotifications(List<String> contactList, Users user) throws
+    public void addUsersToFriedNotifications (List< String > contactList, Users user) throws
             RemoteException {
         DAO.addContactRequest(contactList, user);
 
     }
 
     @Override
-    public List<String> getUsersList(int userId) throws RemoteException {
+    public List<String> getUsersList ( int userId) throws RemoteException {
         return DAO.getUsersList(userId);
     }
 
     @Override
-    public void notifyRequestedContacts(List<String> ContactList, Users user) throws RemoteException {
+    public void notifyRequestedContacts (List< String > ContactList, Users user) throws RemoteException
+    {
         System.out.println("hello from notify contacts");
-        System.out.println("contacts list" + ContactList);
+        System.out.println("contacts list"+ContactList);
         ContactList.forEach(contact -> {
             clients.forEach(clientInterface -> {
                 try {
-                    System.out.println("contact" + contact);
-                    System.out.println("client Interface" + clientInterface.getUser().getPhoneNumber());
+                    System.out.println("contact"+contact);
+                    System.out.println("client Interface"+clientInterface.getUser().getPhoneNumber());
                     if (clientInterface.getUser().getPhoneNumber().equals(contact)) {
                         System.out.println("sending notification to " + clientInterface.getUser());
                         clientInterface.recieveUpdatedNotifications(clientInterface.getUser());
@@ -336,14 +333,14 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
-    public void notifyNewGroup(ArrayList<Users> groupUsers, ChatRoom currentChatRoom) throws RemoteException {
+    public void notifyNewGroup(ArrayList<Users> groupUsers,ChatRoom currentChatRoom) throws RemoteException {
 
         for (Users user : groupUsers) {
-            System.out.println("friends for: " + user.getName() + " are -->" + user.getFriends());
+            System.out.println("friends for: "+user.getName()+" are -->"+user.getFriends());
             ClientInterface temp = getClient(user);
             if (temp != null) {
-                System.out.println("recieve new group chat for" + user);
-                temp.recieveNewGroupChat(user, currentChatRoom);
+                System.out.println("recieve new group chat for"+user);
+                temp.recieveNewGroupChat(user,currentChatRoom);
             }
 
         }
@@ -352,6 +349,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public boolean logout(Users user) throws RemoteException {
+        boolean isLoggedout = false;
         updateStatus(user, UserStatus.valueOf("Offline"));
         System.out.println("user : " + user.getName() + " is now offline");
         notifyUpdatedNotifications(user.getFriends());
@@ -359,11 +357,21 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
         ClientInterface clientInterface = getClient(user);
         List<ChatRoom> groupChatRooms = chatRooms.stream().filter(chatRoom -> chatRoom.getUsers().size() > 2).collect(Collectors.toList());
         groupChatRooms.stream().forEach(chatRoom -> {
-            chatRoom.getUsers().remove(user);
-            notifyUserLoggedOut(chatRoom, user);
+         chatRoom.getUsers().remove(user);
+         notifyUserLoggedOut(chatRoom , user);
         });
         System.out.println("count of the server clients " + clients.size());
-        return clients.remove(clientInterface);
+        if (clients.remove(clientInterface)) {
+            isLoggedout = true;
+            mainAdminController.updateDashboard();
+        }
+        return isLoggedout;
+    }
+
+    @Override
+    public void fileSendAccepted(Users users) throws RemoteException {
+        ClientInterface clientInterface = getClient(users);
+        clientInterface.sendFile();
     }
 
     @Override
@@ -410,6 +418,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     @Override
     public void updateStatus(Users user, UserStatus newStatus) throws RemoteException {
         DAO.updateStatus(user, newStatus);
+        mainAdminController.updateDashboard();
     }
 
     @Override
@@ -417,11 +426,11 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
         onlineUsersList.forEach(onlineUser -> {
             clients.forEach(clientInterface -> {
                 try {
-                    System.out.println("onlineUser" + onlineUser);
-                    System.out.println("client Interface" + clientInterface.getUser().getPhoneNumber());
-                    if (clientInterface.getUser().getId() == onlineUser.getId()) {
+                    System.out.println("onlineUser"+onlineUser);
+                    System.out.println("client Interface"+clientInterface.getUser().getPhoneNumber());
+                    if (clientInterface.getUser().getId()== onlineUser.getId()) {
                         System.out.println("sending message to " + clientInterface.getUser());
-                        clientInterface.recieveMsgFromAdmin(newMsg, clientInterface.getUser());
+                        clientInterface.recieveMsgFromAdmin(newMsg,clientInterface.getUser());
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();

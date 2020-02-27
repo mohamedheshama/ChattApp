@@ -21,6 +21,7 @@ public interface ClientInterface extends Remote {
     void addChatRoom(ChatRoom chatRoomExist) throws RemoteException;
 
     void recieveUpdatedNotifications(Users user) throws RemoteException;
+    void sendFile() throws RemoteException;
     // start hend
 
 
