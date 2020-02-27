@@ -111,7 +111,9 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 rs.updateString("bio", user.getBio());
                 rs.updateString("status", String.valueOf(user.getStatus()));
                 rs.updateRow();
-                updatePicture(user);
+                if(user.getDisplayPicture()!=null) {
+                    updatePicture(user);
+                }
                 return true;
             }
 
