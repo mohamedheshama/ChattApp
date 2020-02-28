@@ -123,5 +123,6 @@ public interface ClientInterface extends Remote {
     void notifyUserLoggedOut(Users user) throws RemoteException;
 
 
+
     //END SHIMAA
 }

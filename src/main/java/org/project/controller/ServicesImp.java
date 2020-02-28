@@ -362,6 +362,8 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
         return clients.remove(clientInterface);
     }
 
+
+
     private void notifyUserLoggedOut(ChatRoom chatRoom, Users user) {
         chatRoom.getUsers().forEach(users -> {
             ClientInterface clientInterface = getClient(users);
