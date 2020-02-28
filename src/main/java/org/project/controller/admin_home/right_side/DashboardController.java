@@ -23,19 +23,17 @@ public class DashboardController implements Initializable {
     private BarChart usresCountryChart;
     @FXML
     private PieChart usersStatusChart;
-
-    public void setUsersDAO(UsersDAOImpl usersDAO) {
-        this.usersDAO = usersDAO;
-        // todo nooooooooooote if country is null it will appear nullpointer exception
-        drawUsersCountryChart(usersCountriestdata);
-        drawUsersStatusChart(userstatusChartPane, usersStatusrdata);
-        drawUsersGenderChart(userGenderChartPane, usersGenderdata);
-    }
-
     private ObservableList<XYChart.Series<String, Number>> usersCountriestdata = FXCollections.observableArrayList();
     private ObservableList<PieChart.Data> usersGenderdata = FXCollections.observableArrayList();
     private ObservableList<PieChart.Data> usersStatusrdata = FXCollections.observableArrayList();
     private UsersDAOImpl usersDAO;
+
+    public void setUsersDAO(UsersDAOImpl usersDAO) {
+        this.usersDAO = usersDAO;
+        drawUsersCountryChart(usersCountriestdata);
+        drawUsersStatusChart(userstatusChartPane, usersStatusrdata);
+        drawUsersGenderChart(userGenderChartPane, usersGenderdata);
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -48,7 +46,9 @@ public class DashboardController implements Initializable {
         String tooltipText = "";
         PieChart pieChart = new PieChart();
         pieChart.setData(observableList);
+        stackPane.getChildren().clear();
         stackPane.getChildren().add(pieChart);
+        System.out.println("drawPieChart");
         for (PieChart.Data data : pieChart.getData()) {
             Node slice = data.getNode();
             double percent = (data.getPieValue() / usersNo * 100);
@@ -74,34 +74,37 @@ public class DashboardController implements Initializable {
     }
 
 
-    private void drawUsersStatusChart(StackPane stackPane, ObservableList<PieChart.Data> usersGenderList) {
+    public void drawUsersStatusChart(StackPane stackPane, ObservableList<PieChart.Data> usersStatusList) {
         int UsersNum = 0;
         Map<String, Integer> map = usersDAO.getUsersByStatus();
         for (Map.Entry m : map.entrySet()) {
             if (m.getKey().toString().equals("Offline"))
-                usersGenderList.add(new PieChart.Data("OFF-Line", Integer.parseInt(m.getValue().toString())));
+                usersStatusList.add(new PieChart.Data("OFF-Line", Integer.parseInt(m.getValue().toString())));
             else
-                usersGenderList.add(new PieChart.Data("ON-Line", Integer.parseInt(m.getValue().toString())));
+                usersStatusList.add(new PieChart.Data("ON-Line", Integer.parseInt(m.getValue().toString())));
             UsersNum += Integer.parseInt(m.getValue().toString());
         }
-        drawPieChart(stackPane, usersGenderList, UsersNum, false);
+        drawPieChart(stackPane, usersStatusList, UsersNum, false);
 
     }
 
-    private void drawUsersCountryChart(ObservableList<XYChart.Series<String, Number>> usersCountriesList) {
+    public void drawUsersCountryChart(ObservableList<XYChart.Series<String, Number>> usersCountriesList) {
+
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Countries");
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("(NO.of Users)");
-        XYChart.Series countriesSeries = new XYChart.Series();
+        XYChart.Series<String, Number> countriesSeries = new XYChart.Series();
         Map<String, Integer> map = usersDAO.getUsersNumByCountry();
-        if(!map.entrySet().toString().contains("null")) {
+        System.out.println(map);
+        if (map.size() > 0) {
             for (Map.Entry m : map.entrySet()) {
-                countriesSeries.getData().add(new XYChart.Data(m.getKey(), m.getValue()));
+                if (m.getKey() != null)
+                    countriesSeries.getData().add(new XYChart.Data(m.getKey(), m.getValue()));
             }
 
-            usersCountriestdata.add(countriesSeries);
-            usresCountryChart.setData(usersCountriestdata);
+            usersCountriesList.add(countriesSeries);
+            usresCountryChart.setData(usersCountriesList);
             usresCountryChart.setTitle("statistics about the users’ country");
             usresCountryChart.setLegendVisible(false);
 

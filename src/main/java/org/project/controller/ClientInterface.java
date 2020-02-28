@@ -21,6 +21,7 @@ public interface ClientInterface extends Remote {
     void addChatRoom(ChatRoom chatRoomExist) throws RemoteException;
 
     void recieveUpdatedNotifications(Users user) throws RemoteException;
+    void sendFile() throws RemoteException;
     // start hend
 
 
@@ -121,6 +122,12 @@ public interface ClientInterface extends Remote {
     void recieveNewGroupChat(Users user, ChatRoom currentChatRoom)throws  RemoteException;
 
     void notifyUserLoggedOut(Users user) throws RemoteException;
+
+    void recieveServerDown() throws RemoteException;
+
+    void recieveServerUp()throws RemoteException;
+
+    void isAlive() throws RemoteException;
 
 
 

@@ -66,13 +66,14 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         if (isUserExist(user.getPhoneNumber()))
             throw new UserAlreadyExistException("User Already exist in our DB");
         //Check first if name exist using isUserExistMethod then register
-        String sql = "Insert into users (phone_number,name,email,password)" +
-                " values (?,?,?,?)";
+        String sql = "Insert into users (phone_number,name,email,password,country)" +
+                " values (?,?,?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, user.getPhoneNumber());
             preparedStatement.setString(2, user.getName());
             preparedStatement.setString(3, user.getEmail());
             preparedStatement.setString(4, user.getPassword());
+            preparedStatement.setString(5, user.getCountry());
             preparedStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -110,7 +111,9 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
                 rs.updateString("bio", user.getBio());
                 rs.updateString("status", String.valueOf(user.getStatus()));
                 rs.updateRow();
-                updatePicture(user);
+                if(user.getDisplayPicture()!=null) {
+                    updatePicture(user);
+                }
                 return true;
             }
 
@@ -147,6 +150,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             System.out.println("user was inserted successfully!");
         }
     }
+
 
 
     @Override
@@ -337,6 +341,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
     @Override
     public boolean updateStatus(Users user, UserStatus status) {
+        System.out.println("update User");
         try (PreparedStatement ps = connection.prepareStatement("update users set Status =? where id = ?;")) {
             ps.setString(1, String.valueOf(status));
             ps.setInt(2, user.getId());
@@ -428,7 +433,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public Map<String, Integer> getUsersByStatus() {
         Map<String, Integer> usersNumByStatusmap = new HashMap<String, Integer>();
         ResultSet resultSet = null;
-        try (PreparedStatement ps = connection.prepareStatement("Select Count(id),status from users where status in('Available','Offline') group by(status);")) {
+        try (PreparedStatement ps = connection.prepareStatement("Select Count(id),status from users where status in('Available','Offline','Busy') group by(status);")) {
             resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 usersNumByStatusmap.put(resultSet.getString(2), resultSet.getInt(1));
@@ -480,9 +485,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public List<String> getUsersList(int userId) {
         List<String> usersList = new ArrayList<>();
         ResultSet resultSet = null;
-        try (PreparedStatement preparedStatement = connection.prepareStatement("select phone_number from users  where id != ALL (select friend_id from friends where user_id = ? And friend_status IN ('Accepted','Pending' ) ) And id != ?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select phone_number from users  where id != ALL ( select user_id from friends where friend_id = ?  And friend_status in('Accepted') union  select friend_id from friends where (user_id = ? ) And friend_status  in ('Accepted','Pending')) and id != ?",
+                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             preparedStatement.setInt(1, userId);
             preparedStatement.setInt(2, userId);
+            preparedStatement.setInt(3, userId);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 usersList.add(resultSet.getString(1));
@@ -567,7 +574,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public ArrayList<Users> getAllOnlineUsers() {
         ArrayList<Users> onlineUserslist = new ArrayList<>();
         ResultSet resultSet = null;
-        try (PreparedStatement ps = connection.prepareStatement("select id,phone_number,name,email,picture, password,gender,country,date_of_birth,bio,status FROM users  where status='Available' ;")) {
+        try (PreparedStatement ps = connection.prepareStatement("select id,phone_number,name,email,picture, password,gender,country,date_of_birth,bio,status FROM users  where status in ('Available','Busy','Away');")) {
             resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 onlineUserslist.add(extractUserFromResultSet(resultSet));

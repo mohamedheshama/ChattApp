@@ -3,6 +3,7 @@ package org.project.controller;
 import com.healthmarketscience.rmiio.RemoteInputStream;
 import com.healthmarketscience.rmiio.RemoteInputStreamClient;
 import com.healthmarketscience.rmiio.RemoteInputStream;
+import org.project.controller.admin_home.MainAdminController;
 import org.project.controller.messages.Message;
 import org.project.model.ChatRoom;
 import org.project.model.connection.MysqlConnection;
@@ -27,21 +28,65 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ServicesImp extends UnicastRemoteObject implements ServicesInterface {
+    ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
     UsersDAO DAO;
     CopyOnWriteArrayList<ClientInterface> clients;
     CopyOnWriteArrayList<ChatRoom> chatRooms;
+    MainAdminController mainAdminController;
 
-    public ServicesImp() throws RemoteException {
+    private void updateDBWithActiveUsers() throws RemoteException {
+        ArrayList<Users> availableUsers = DAO.getAllOnlineUsers();
+        System.out.println("online users in DB " + availableUsers);
+        for (Users availableUser : availableUsers) {
+            boolean userIsOffline = true;
+            for (ClientInterface client : clients) {
+                if (client.getUser().getId() == availableUser.getId()){
+                    System.out.println("user from server with name of " + client.getUser().getName()+
+                            "also in bb with name   " + availableUser.getName());
+                    userIsOffline = false;
+                }
+            }
+            if (userIsOffline){
+                System.out.println("Found Dead User " + availableUser.getName());
+                DAO.updateStatus(availableUser , UserStatus.valueOf("Offline"));
+                mainAdminController.updateDashboard();
+            }
+        }
+    }
+
+    public ServicesImp(MainAdminController mainAdminController) throws RemoteException {
+
         super(1260);
+        this.mainAdminController = mainAdminController;
         try {
-                        DAO = new UsersDAOImpl(MysqlConnection.getInstance());
+            DAO = new UsersDAOImpl(MysqlConnection.getInstance());
             clients = new CopyOnWriteArrayList<>();
             chatRooms = new CopyOnWriteArrayList<>();
+            scheduledExecutorService.scheduleAtFixedRate(() -> {
+                try {
+                    updateDBWithActiveUsers();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(clients.size());
+                if (clients != null){
+                    clients.forEach(clientInterface -> {
+                        if (!clientIsAlive(clientInterface)) {
+                                clients.remove(clientInterface);
+                        }
+                    });
+                }
+
+            },0, 1 , TimeUnit.SECONDS);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,12 +100,17 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     @Override
     public Boolean register(Users user) throws RemoteException, SQLException {
         System.out.println(user + " is registered");
-        return DAO.register(user);
+        boolean isLogged = false;
+        if (DAO.register(user)) {
+            isLogged = true;
+            mainAdminController.updateDashboard();
+        }
+        return isLogged;
     }
 
     @Override
     public Boolean checkUserLogin(String phoneNumber, String password) throws RemoteException {
-        System.out.println("cheking user login"+ phoneNumber+password);
+        System.out.println("cheking user login" + phoneNumber + password);
         return DAO.matchUserNameAndPassword(phoneNumber, password);
     }
 
@@ -79,8 +129,9 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void notifyUpdate(Users users) throws RemoteException {
-        System.out.println("check user in serviece imp notify methode "+users);
+        System.out.println("check user in serviece imp notify methode " + users);
         DAO.updateUser(users);
+        mainAdminController.updateDashboard();
 
     }
     /*@Override
@@ -97,74 +148,45 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
 
     @Override
-    public void sendFile(String newMsg, RemoteInputStream remoteFileData, ChatRoom chatRoom, int userSendFileId) throws IOException,RemoteException {
+    public void sendFile(String newMsg, RemoteInputStream remoteFileData, ChatRoom chatRoom, int userSendFileId) throws IOException, RemoteException {
+        // todo download file to server
+        //todo then send file to reciever
+
         chatRoom.getUsers().forEach(user -> {
-            if(user.getId()!=userSendFileId){
-                InputStream fileData= null;
+            if (user.getId() != userSendFileId) {
+                InputStream fileData = null;
+                ByteBuffer buffer = null;
+                WritableByteChannel to = null;
+                ReadableByteChannel from = null;
                 try {
                     fileData = RemoteInputStreamClient.wrap(remoteFileData);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                System.out.println("server 2 write");
-                ReadableByteChannel from = Channels.newChannel(fileData);
-                ByteBuffer buffer = null;
-                try {
+                    System.out.println("server 2 write" + user.getName());
+                    from = Channels.newChannel(fileData);
                     buffer = ByteBuffer.allocateDirect(fileData.available());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-                WritableByteChannel to = null;
-                try {
                     String home = System.getProperty("user.home");
-                    to = FileChannel.open(Paths.get(home +"/Downloads/"+ newMsg), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
+                    to = FileChannel.open(Paths.get(home + "/Downloads/" + newMsg), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
+                    while ((from.read(buffer) != -1)) {
+                        buffer.flip();
+                        while (buffer.hasRemaining()) {
+                            System.out.println("server write");
+                            to.write(buffer);
+                        }
+                        buffer.clear();
+                    }
+
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-                while (true)
-                {
+                } finally {
                     try {
-                        if (!(from.read(buffer) != -1)) break;
+                        to.close();
+                        from.close();
+                        fileData.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    buffer.flip();
-                    while (buffer.hasRemaining()) {
-                        System.out.println("server write");
-                        try {
-                            to.write(buffer);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    buffer.clear();
                 }
-                try {
-                    from.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    to.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    fileData.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
             }
-
-
-
-
         });
-
-
     }
 
 
@@ -174,11 +196,16 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     @Override
     public void sendMessage(Message newMsg, ChatRoom chatRoom) throws RemoteException {
 
-        chatRooms.forEach(chatRoom1 -> {
-            if (chatRoom1.getChatRoomId().equals(chatRoom.getChatRoomId())){
-                chatRoom1.getChatRoomMessage().add(newMsg);
-            }
-        });
+       Thread t = new Thread(() ->{
+           chatRooms.forEach(chatRoom1 -> {
+               if (chatRoom1.getChatRoomId().equals(chatRoom.getChatRoomId())){
+                   chatRoom1.getChatRoomMessage().add(newMsg);
+               }
+           });
+       });
+       t.setDaemon(true);
+       t.start();
+
         chatRoom.getUsers().forEach(user -> {
             clients.forEach(clientInterface -> {
                 try {
@@ -197,23 +224,38 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     public void registerClient(ClientInterface clientImp) throws RemoteException {
         System.out.println("in server register client");
         clients.add(clientImp);
+        notifyUpdatedNotifications(clientImp.getUser().getFriends());
+        mainAdminController.updateDashboard();
         System.out.println("new Client is assigned" + clientImp.getUser());
     }
 
     @Override
     public ChatRoom requestChatRoom(ArrayList<Users> chatroomUsers) throws RemoteException {
-        List<Integer> collect = chatroomUsers.stream().map(Users::getId).collect(Collectors.toList());
-        String chatRoomId = collect.stream().sorted().collect(Collectors.toList()).toString();
-        ChatRoom chatRoomExist = checkChatRoomExist(chatRoomId);
-        if (chatRoomExist != null){
+        boolean deadcleint = false;
+        for (Users chatroomUser : chatroomUsers) {
+            if (getClient(chatroomUser) == null){
+                    System.out.println("user dead");
+                    deadcleint = true;
+                    break;
+            }
+
+        }
+        if (!deadcleint){
+            System.out.println("user isn't dead");
+            List<Integer> collect = chatroomUsers.stream().map(Users::getId).collect(Collectors.toList());
+            String chatRoomId = collect.stream().sorted().collect(Collectors.toList()).toString();
+            ChatRoom chatRoomExist = checkChatRoomExist(chatRoomId);
+            if (chatRoomExist != null){
+                return chatRoomExist;
+            }
+            chatRoomExist = new ChatRoom();
+            chatRoomExist.setChatRoomId(chatRoomId);
+            chatRoomExist.setUsers(chatroomUsers);
+            chatRooms.add(chatRoomExist);
+            addChatRoomToAllClients(chatroomUsers , chatRoomExist);
             return chatRoomExist;
         }
-        chatRoomExist = new ChatRoom();
-        chatRoomExist.setChatRoomId(chatRoomId);
-        chatRoomExist.setUsers(chatroomUsers);
-        chatRooms.add(chatRoomExist);
-        addChatRoomToAllClients(chatroomUsers , chatRoomExist);
-        return chatRoomExist;
+        return null;
     }
 
     @Override
@@ -348,7 +390,8 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public boolean logout(Users user) throws RemoteException {
-        updateStatus(user , UserStatus.valueOf("Offline"));
+        boolean isLoggedout = false;
+        updateStatus(user, UserStatus.valueOf("Offline"));
         System.out.println("user : " + user.getName() + " is now offline");
         notifyUpdatedNotifications(user.getFriends());
         System.out.println("now user Friends are supposed to be notified");
@@ -359,7 +402,65 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
          notifyUserLoggedOut(chatRoom , user);
         });
         System.out.println("count of the server clients " + clients.size());
-        return clients.remove(clientInterface);
+        if (clients.remove(clientInterface)) {
+            isLoggedout = true;
+            notifyUpdatedNotifications(user.getFriends());
+            mainAdminController.updateDashboard();
+        }
+        return isLoggedout;
+    }
+
+    @Override
+    public void fileSendAccepted(Users users) throws RemoteException {
+        ClientInterface clientInterface = getClient(users);
+        clientInterface.sendFile();
+    }
+
+    @Override
+    public void setverIsAlive() throws RemoteException {
+
+    }
+
+    @Override
+    public void notifyServerisDown() throws RemoteException {
+        if (clients != null && clients.size() > 0){
+            for (ClientInterface client : clients) {
+                client.recieveServerDown();
+
+            }
+        }
+    }
+
+    @Override
+    public void notifyServerisup() throws RemoteException {
+        for (ClientInterface client : clients) {
+            client.recieveServerUp();
+            if (clientIsAlive(client)){
+                client.getUser().getChatRooms().forEach(chatRoom -> {
+                    if (chatRoom != null){
+                        try {
+                            notifyUserLoggedOut( chatRoom, client.getUser());
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                clients.remove(client);
+
+            }
+        }
+    }
+
+    private boolean clientIsAlive(ClientInterface client) {
+       // boolean isAlive = true;
+        try {
+            client.isAlive();
+            return true;
+        } catch (RemoteException e) {
+            //e.printStackTrace();
+            return false;
+        }
     }
 
 
@@ -377,7 +478,8 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void updateStatus(Users user, UserStatus newStatus) throws RemoteException {
-        DAO.updateStatus(user,newStatus);
+        DAO.updateStatus(user, newStatus);
+        mainAdminController.updateDashboard();
     }
 
     @Override

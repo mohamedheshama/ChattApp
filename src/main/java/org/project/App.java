@@ -33,6 +33,12 @@ public class App extends Application {
         stage.show();
     }
 
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+
+    }
+
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
@@ -42,7 +48,7 @@ public class App extends Application {
         return fxmlLoader.load();
     }
 
-    private static void initializeRMI(){
+    /*private static void initializeRMI(){
         try {
             Registry reg = LocateRegistry.createRegistry(3306);
             System.setProperty("java.rmi.server.hostname", "localhost"); // Uses the loopback address, 127.0.0.1, if yo
@@ -51,7 +57,7 @@ public class App extends Application {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
 
     public static void main(String[] args) {
