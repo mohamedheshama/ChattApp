@@ -61,11 +61,8 @@ public class MainAdminController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         try {
-            reg = LocateRegistry.createRegistry(1260);
             System.setProperty("java.rmi.server.hostname", "127.0.0.1"); //10.145.7.12 Uses the loopback address, 127.0.0.1, if yo
-            servicesImp = new ServicesImp(this);
             reg = LocateRegistry.createRegistry(1260);
-            System.setProperty("java.rmi.server.hostname", "127.0.0.1"); //10.145.7.12 Uses the loopback address, 127.0.0.1, if yo
             servicesImp = new ServicesImp(this);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -143,7 +140,7 @@ public class MainAdminController implements Initializable {
 
     @FXML
     private void handleStartService(ActionEvent event) throws RemoteException {
-        servicesImp.notifyServerisup();
+        //servicesImp.notifyServerisup();
         startServiceBtn.setDisable(true);
         startServiceBtn.setText("Service Started");
         stopServiceBtn.setDisable(false);

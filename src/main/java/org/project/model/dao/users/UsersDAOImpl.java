@@ -337,6 +337,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
     @Override
     public boolean updateStatus(Users user, UserStatus status) {
+        System.out.println("update User");
         try (PreparedStatement ps = connection.prepareStatement("update users set Status =? where id = ?;")) {
             ps.setString(1, String.valueOf(status));
             ps.setInt(2, user.getId());
@@ -428,7 +429,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public Map<String, Integer> getUsersByStatus() {
         Map<String, Integer> usersNumByStatusmap = new HashMap<String, Integer>();
         ResultSet resultSet = null;
-        try (PreparedStatement ps = connection.prepareStatement("Select Count(id),status from users where status in('Available','Offline') group by(status);")) {
+        try (PreparedStatement ps = connection.prepareStatement("Select Count(id),status from users where status in('Available','Offline','Busy') group by(status);")) {
             resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 usersNumByStatusmap.put(resultSet.getString(2), resultSet.getInt(1));
@@ -569,7 +570,7 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public ArrayList<Users> getAllOnlineUsers() {
         ArrayList<Users> onlineUserslist = new ArrayList<>();
         ResultSet resultSet = null;
-        try (PreparedStatement ps = connection.prepareStatement("select id,phone_number,name,email,picture, password,gender,country,date_of_birth,bio,status FROM users  where status='Available' ;")) {
+        try (PreparedStatement ps = connection.prepareStatement("select id,phone_number,name,email,picture, password,gender,country,date_of_birth,bio,status FROM users  where status in ('Available','Busy','Away');")) {
             resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 onlineUserslist.add(extractUserFromResultSet(resultSet));
