@@ -431,12 +431,19 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
 
     @Override
     public Map<String, Integer> getUsersByStatus() {
+        int counter =0;
         Map<String, Integer> usersNumByStatusmap = new HashMap<String, Integer>();
         ResultSet resultSet = null;
-        try (PreparedStatement ps = connection.prepareStatement("Select Count(id),status from users where status in('Available','Offline','Busy') group by(status);")) {
+        try (PreparedStatement ps = connection.prepareStatement("select count(id) from users where status in('Away','Available','Busy') union select count(id)   from users where status ='Offline';")) {
             resultSet = ps.executeQuery();
             while (resultSet.next()) {
-                usersNumByStatusmap.put(resultSet.getString(2), resultSet.getInt(1));
+                if(counter == 0){
+                    usersNumByStatusmap.put("Online", resultSet.getInt(1));
+                    counter++;
+                }else{
+                    usersNumByStatusmap.put("Offline", resultSet.getInt(1));
+                }
+
             }
 
         } catch (SQLException ex) {
