@@ -78,10 +78,12 @@ public class DashboardController implements Initializable {
         int UsersNum = 0;
         Map<String, Integer> map = usersDAO.getUsersByStatus();
         for (Map.Entry m : map.entrySet()) {
-            if (m.getKey().toString().equals("Offline"))
-                usersStatusList.add(new PieChart.Data("OFF-Line", Integer.parseInt(m.getValue().toString())));
-            else
-                usersStatusList.add(new PieChart.Data("ON-Line", Integer.parseInt(m.getValue().toString())));
+            int statusValy =Integer.parseInt(m.getValue().toString());
+            if (m.getKey().toString().equals("Offline") && statusValy > 0) {
+                usersStatusList.add(new PieChart.Data("OFF-Line", statusValy));
+            }else if(m.getKey().toString().equals("Online")  && statusValy > 0) {
+                usersStatusList.add(new PieChart.Data("ON-Line",statusValy));
+            }
             UsersNum += Integer.parseInt(m.getValue().toString());
         }
         drawPieChart(stackPane, usersStatusList, UsersNum, false);
