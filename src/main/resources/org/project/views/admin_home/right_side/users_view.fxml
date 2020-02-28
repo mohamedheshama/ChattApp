@@ -35,14 +35,7 @@
 
 
 
-                          <Button mnemonicParsing="false" onAction="#Update" prefHeight="43.0" prefWidth="134.0" style="-fx-background-color: #0099cc; -fx-background-radius: 20; -fx-text-fill: #ffffff;" text="Update" textFill="#4f4a4a">
-                        <HBox.margin>
-                            <Insets />
-                        </HBox.margin>
-                        <font>
-                            <Font name="System Bold" size="18.0" />
-                        </font>
-                    </Button>
+
 
 
                </children>
@@ -93,22 +86,36 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </PasswordField>
+
          </children>
          <padding>
             <Insets left="20.0" right="20.0" />
          </padding>
       </HBox>
-      <HBox alignment="CENTER" prefHeight="42.0" prefWidth="562.0">
+
+    <HBox alignment="CENTER" prefHeight="70.0" spacing="20.0" VBox.vgrow="ALWAYS">
+    <children>
+       <ChoiceBox fx:id="choicebox" layoutX="50.0" layoutY="344.0" prefHeight="28.0" prefWidth="71.0" style="-fx-background-color: llaliceblue;" />
+
+
+    </children>
+        <padding>
+            <Insets left="20.0" right="20.0" />
+        </padding>
+    </HBox>
+
+       <HBox alignment="CENTER" prefHeight="42.0" prefWidth="562.0">
          <children>
             <Label fx:id="valErrorlbl" alignment="CENTER" contentDisplay="CENTER" />
          </children>
       </HBox>
               <TableView id="userTable" fx:id="tableView" editable="true" layoutX="19.0" layoutY="120.0" prefHeight="363.0" prefWidth="562.0">
                   <columns>
-                      <TableColumn fx:id="phoneCol" prefWidth="122.0" text="Phone" />
-                      <TableColumn fx:id="useCol" prefWidth="123.0" text="UserName" />
-                      <TableColumn fx:id="emailCol" prefWidth="181.0" text="Email" />
-                      <TableColumn fx:id="passwordCol" minWidth="2.0" prefWidth="134.0" text="Password" />
+                      <TableColumn fx:id="phoneCol" prefWidth="85.0" text="Phone" />
+                      <TableColumn fx:id="useCol" prefWidth="97.0" text="UserName" />
+                      <TableColumn fx:id="emailCol" prefWidth="116.0" text="Email" />
+                      <TableColumn fx:id="passwordCol" minWidth="2.0" prefWidth="140.0" text="Password" />
+            <TableColumn fx:id="countryCol" prefWidth="121.0" text="Country" />
                   </columns>
               </TableView>
 
