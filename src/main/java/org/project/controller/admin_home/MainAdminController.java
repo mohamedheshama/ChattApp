@@ -59,10 +59,9 @@ public class MainAdminController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
         try {
             System.setProperty("java.rmi.server.hostname", "127.0.0.1"); //10.145.7.12 Uses the loopback address, 127.0.0.1, if yo
-            reg = LocateRegistry.createRegistry(1260);
+            reg = LocateRegistry.createRegistry(1290);
             servicesImp = new ServicesImp(this);
         } catch (RemoteException e) {
             e.printStackTrace();
