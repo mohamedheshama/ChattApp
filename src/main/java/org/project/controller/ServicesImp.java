@@ -154,36 +154,10 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
         chatRoom.getUsers().forEach(user -> {
             if (user.getId() != userSendFileId) {
-                InputStream fileData = null;
-                ByteBuffer buffer = null;
-                WritableByteChannel to = null;
-                ReadableByteChannel from = null;
                 try {
-                    fileData = RemoteInputStreamClient.wrap(remoteFileData);
-                    System.out.println("server 2 write" + user.getName());
-                    from = Channels.newChannel(fileData);
-                    buffer = ByteBuffer.allocateDirect(fileData.available());
-                    String home = System.getProperty("user.home");
-                    to = FileChannel.open(Paths.get(home + "/Downloads/" + newMsg), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
-                    while ((from.read(buffer) != -1)) {
-                        buffer.flip();
-                        while (buffer.hasRemaining()) {
-                            System.out.println("server write");
-                            to.write(buffer);
-                        }
-                        buffer.clear();
-                    }
-
-                } catch (IOException e) {
+                    getClient(user).reveiveTheActualFile(newMsg , remoteFileData);
+                } catch (RemoteException e) {
                     e.printStackTrace();
-                } finally {
-                    try {
-                        to.close();
-                        from.close();
-                        fileData.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
         });

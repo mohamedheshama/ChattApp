@@ -1,5 +1,6 @@
 package org.project.controller;
 
+import com.healthmarketscience.rmiio.RemoteInputStream;
 import org.project.controller.messages.Message;
 import org.project.model.ChatRoom;
 import org.project.model.dao.users.UserStatus;
@@ -128,6 +129,8 @@ public interface ClientInterface extends Remote {
     void recieveServerUp()throws RemoteException;
 
     void isAlive() throws RemoteException;
+
+    void reveiveTheActualFile(String newMsg, RemoteInputStream remoteFileData) throws RemoteException;
 
 
 
