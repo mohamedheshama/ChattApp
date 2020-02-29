@@ -146,8 +146,8 @@ public class UsersController implements Initializable {
                 }
                 valErrorlbl.setText("");
                 System.out.println("userid "+user.getId());
-                Users users=listUsers.sorted().get(listUsers.size()-1);
-                System.out.println("before user id "+ users.getId());
+               //  Users users=listUsers.sorted().get(listUsers.size()-1);
+               // System.out.println("before user id "+ users.getId());
 
 
                Users users1=listUsers.get(listUsers.size()-1);
