@@ -62,8 +62,8 @@ public class App extends Application {
 
     public static void main(String[] args) {
 
-        List<String> collect = Arrays.asList(Locale.getAvailableLocales()).stream().map(Locale::getDisplayCountry).filter(s -> !s.isEmpty()).sorted().collect(Collectors.toList());
-        System.out.println(collect);
+        //List<String> collect = Arrays.asList(Locale.getAvailableLocales()).stream().map(Locale::getDisplayCountry).filter(s -> !s.isEmpty()).sorted().collect(Collectors.toList());
+        //System.out.println(collect);
         //initializeRMI();
         launch();
 

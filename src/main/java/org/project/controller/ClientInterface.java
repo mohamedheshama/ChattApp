@@ -135,5 +135,6 @@ public interface ClientInterface extends Remote {
     void recieveUpdateCurrentUser(Users currentUser) throws RemoteException;
 
 
+
     //END SHIMAA
 }

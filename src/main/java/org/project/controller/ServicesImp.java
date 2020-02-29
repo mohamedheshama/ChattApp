@@ -85,7 +85,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
                     });
                 }
 
-            },0, 1 , TimeUnit.SECONDS);
+            },0, 100 , TimeUnit.SECONDS);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -443,6 +443,8 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
             return false;
         }
     }
+
+
 
     private void notifyUserLoggedOut(ChatRoom chatRoom, Users user) {
         chatRoom.getUsers().forEach(users -> {
