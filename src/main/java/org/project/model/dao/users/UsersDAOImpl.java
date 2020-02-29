@@ -551,10 +551,15 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public ArrayList<Users> getUserOnlineFriends(Users user) {
         ResultSet rs = null;
         ArrayList<Users> OnlineFriendsList = new ArrayList<Users>();
-        try (PreparedStatement ps = connection.prepareStatement("SELECT  f.friend_id id ,u2.phone_number,u2.name ,u2.email,u2.password,u2.gender,u2.country,u2.date_of_birth,u2.bio,u2.status,u2.picture" +
-                " FROM users u , friends f, users u2 where f.user_id=u.id and" +
-                " f.friend_id = u2.id AND f.friend_status='Accepted' and u.id = ? AND u2.status='Available';")){
+        try (PreparedStatement ps = connection.prepareStatement("SELECT  f.friend_id id ,u2.phone_number,u2.name ,u2.email,u2.password,u2.gender,u2.country,u2.date_of_birth,u2.bio,u2.status,u2.picture " +
+                " FROM users u , friends f, users u2 where f.user_id=u.id and " +
+                " f.friend_id = u2.id AND f.friend_status='Accepted' and u.id = ? AND u2.status='Available' " +
+                " union " +
+                " SELECT  f.user_id id ,u2.phone_number,u2.name ,u2.email,u2.password,u2.gender,u2.country,u2.date_of_birth,u2.bio,u2.status,u2.picture " +
+                " FROM users u , friends f, users u2 where user_id != ? and " +
+                " f.user_id = u2.id AND f.friend_status='Accepted'  AND u2.status='Available' ")){
             ps.setInt(1, user.getId());
+            ps.setInt( 2 , user.getId());
             rs = ps.executeQuery();
             while (rs.next())
             {
