@@ -135,14 +135,16 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
     public void updatePicture(Users user){
         ByteArrayInputStream bais =null;
         PreparedStatement pstmt = null;
-        int rowsAdded = -0;
+        int rowsAdded = 0;
         try {
+            System.out.println("user picture is"+user.getDisplayPicture()+"");
             bais=new ByteArrayInputStream(user.getDisplayPicture());
             String SQL = "UPDATE users SET picture = ? WHERE  id= ?";
             pstmt = connection.prepareStatement(SQL);
             pstmt.setBinaryStream(1, bais, user.getDisplayPicture().length);
             pstmt.setInt(2,user.getId());
             rowsAdded = pstmt.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

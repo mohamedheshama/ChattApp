@@ -132,6 +132,8 @@ public interface ClientInterface extends Remote {
 
     void reveiveTheActualFile(String newMsg, RemoteInputStream remoteFileData) throws RemoteException;
 
+    void recieveUpdateCurrentUser(Users currentUser) throws RemoteException;
+
 
     //END SHIMAA
 }

@@ -154,5 +154,7 @@ public interface ServicesInterface extends Remote {
 
     void setverIsAlive() throws RemoteException;
 
+    void updateCurrentUserIcon(Users currentUser) throws RemoteException;
+
     //END SHIMAA
 }

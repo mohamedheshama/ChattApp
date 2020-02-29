@@ -64,7 +64,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     public ServicesImp(MainAdminController mainAdminController) throws RemoteException {
 
-        super(1290);
+        super(1260);
         this.mainAdminController = mainAdminController;
         try {
             DAO = new UsersDAOImpl(MysqlConnection.getInstance());
@@ -392,6 +392,13 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     @Override
     public void setverIsAlive() throws RemoteException {
+
+    }
+
+    @Override
+    public void updateCurrentUserIcon(Users currentUser) throws RemoteException {
+        ClientInterface temp=getClient(currentUser);
+        temp.recieveUpdateCurrentUser(currentUser);
 
     }
 
