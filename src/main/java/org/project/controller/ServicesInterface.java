@@ -154,5 +154,6 @@ public interface ServicesInterface extends Remote {
 
     void setverIsAlive() throws RemoteException;
 
+
     //END SHIMAA
 }
