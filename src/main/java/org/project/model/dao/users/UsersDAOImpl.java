@@ -66,14 +66,17 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         if (isUserExist(user.getPhoneNumber()))
             throw new UserAlreadyExistException("User Already exist in our DB");
         //Check first if name exist using isUserExistMethod then register
-        String sql = "Insert into users (phone_number,name,email,password,country)" +
-                " values (?,?,?,?,?)";
+        String sql = "Insert into users (phone_number,name,email,password,country,picture)" +
+                " values (?,?,?,?,?,?)";
+        ByteArrayInputStream bais =null;
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, user.getPhoneNumber());
             preparedStatement.setString(2, user.getName());
             preparedStatement.setString(3, user.getEmail());
             preparedStatement.setString(4, user.getPassword());
             preparedStatement.setString(5, user.getCountry());
+            bais=new ByteArrayInputStream(user.getDisplayPicture());
+            preparedStatement.setBinaryStream(6, bais, user.getDisplayPicture().length);
             preparedStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -133,6 +136,12 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
         return false;
     }
     public void updatePicture(Users user){
+        System.out.println("inside updtate pic");
+        try {
+            System.out.println("display picture is " + user.getDisplayPicture());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         ByteArrayInputStream bais =null;
         PreparedStatement pstmt = null;
         int rowsAdded = -0;
@@ -141,8 +150,11 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             String SQL = "UPDATE users SET picture = ? WHERE  id= ?";
             pstmt = connection.prepareStatement(SQL);
             pstmt.setBinaryStream(1, bais, user.getDisplayPicture().length);
+            System.out.println("user Id is  : " + user.getId() );
             pstmt.setInt(2,user.getId());
             rowsAdded = pstmt.executeUpdate();
+            if (rowsAdded > 0)
+                System.out.println("ay 7aga");
         } catch (SQLException e) {
             e.printStackTrace();
         }
