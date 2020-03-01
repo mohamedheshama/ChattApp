@@ -71,11 +71,6 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
             clients = new CopyOnWriteArrayList<>();
             chatRooms = new CopyOnWriteArrayList<>();
             scheduledExecutorService.scheduleAtFixedRate(() -> {
-                try {
-                    updateDBWithActiveUsers();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
                 System.out.println(clients.size());
                 if (clients != null){
                     clients.forEach(clientInterface -> {
@@ -85,7 +80,15 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
                     });
                 }
 
-            },0, 10 , TimeUnit.SECONDS);
+            },0, 50 , TimeUnit.SECONDS);
+            scheduledExecutorService.scheduleAtFixedRate(() -> {
+                try {
+                    updateDBWithActiveUsers();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+
+            },0, 50 , TimeUnit.SECONDS);
 
         } catch (SQLException e) {
             e.printStackTrace();
