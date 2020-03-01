@@ -51,7 +51,7 @@ public class App extends Application {
     /*private static void initializeRMI(){
         try {
             Registry reg = LocateRegistry.createRegistry(3306);
-            System.setProperty("java.rmi.server.hostname", "localhost"); // Uses the loopback address, 127.0.0.1, if yo
+            System.setProperty("java.rmi.server.hostname", "127.0.0.1"); // Uses the loopback address, 127.0.0.1, if yo
             ServicesInterface servicesImp = new ServicesImp();
             reg.rebind("ServerServices", servicesImp);
         } catch (RemoteException e) {

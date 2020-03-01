@@ -85,7 +85,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
                     });
                 }
 
-            },0, 100 , TimeUnit.SECONDS);
+            },0, 10 , TimeUnit.SECONDS);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -173,10 +173,14 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
        Thread t = new Thread(() ->{
            chatRooms.forEach(chatRoom1 -> {
                if (chatRoom1.getChatRoomId().equals(chatRoom.getChatRoomId())){
-                   chatRoom1.getChatRoomMessage().add(newMsg);
+                   System.out.println("users in chat room are " + chatRoom1.getUsers());
+                   chatRoom1.getChatRoomMessage().add(newMsg);;
+                   newMsg.setUsers((chatRoom1.getUsers()));
+                   System.out.println("after assigning the new msg users are " + newMsg.getUsers());
                }
            });
        });
+
        t.setDaemon(true);
        t.start();
 
