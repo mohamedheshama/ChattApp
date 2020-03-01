@@ -7,6 +7,12 @@ import org.project.model.connection.ConnectionStrategy;
 import org.project.model.dao.friends.RequestStatus;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -75,13 +81,21 @@ public class UsersDAOImpl implements UsersDAO, ConnectionStrategy{
             preparedStatement.setString(3, user.getEmail());
             preparedStatement.setString(4, user.getPassword());
             preparedStatement.setString(5, user.getCountry());
-            bais=new ByteArrayInputStream(user.getDisplayPicture());
-            preparedStatement.setBinaryStream(6, bais, user.getDisplayPicture().length);
+            if (user.getDisplayPicture() != null) {
+                bais = new ByteArrayInputStream(user.getDisplayPicture());
+                preparedStatement.setBinaryStream(6, bais, user.getDisplayPicture().length);
+            }else{
+                URL url = getClass().getResource("/org/project/images/unknown.png");
+                Path dest = Paths.get(url.toURI());
+                if (dest != null) {
+                    byte[] bytes = Files.readAllBytes(dest);
+                    bais = new ByteArrayInputStream(bytes);
+                    preparedStatement.setBinaryStream(6, bais, bytes.length);
+                }
+            }
             preparedStatement.executeUpdate();
             return true;
-        } catch (SQLException e) {
-            logger.warning(e.getSQLState());
-            logger.warning(e.getMessage());
+        } catch (SQLException | URISyntaxException | IOException e) {
             e.printStackTrace();
         }
         return false;

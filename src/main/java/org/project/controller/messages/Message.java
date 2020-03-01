@@ -5,13 +5,15 @@ import org.project.model.dao.users.Users;
 
 import java.io.Serializable;
 import java.security.PublicKey;
+import java.util.ArrayList;
 
 public class Message implements Serializable {
 
-    private String name;
+    private String reciverName;
     private MessageType type;
     private String msg;
     private String fontFamily;
+    private ArrayList<Users> users;
 
     public String getFontPosture() {
         return fontPosture;
@@ -108,7 +110,6 @@ public class Message implements Serializable {
     }
 
     // private ArrayList<Users> listUsers;
-    // private ArrayList<Users> users;
     //private UserStatus status;
     private String picture;
 
@@ -119,12 +120,12 @@ public class Message implements Serializable {
         return picture;
     }
 
-    public String getName() {
-        return name;
+    public String getReciverName() {
+        return reciverName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setReciverName(String reciverName) {
+        this.reciverName = reciverName;
     }
 
     public String getMsg() {
@@ -151,16 +152,13 @@ public class Message implements Serializable {
     public void setPicture(String picture) {
         this.picture = picture;
     }
+
+    */
     public ArrayList<Users> getUsers() {
         return users;
     }
     public void setUsers(ArrayList<Users> users) {
         this.users = users;
     }
-    public void setStatus(UserStatus status) {
-        this.status = status;
-    }
-    public UserStatus getStatus() {
-        return status;
-    }*/
+
 }

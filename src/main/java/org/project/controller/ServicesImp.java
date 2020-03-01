@@ -85,7 +85,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
                     });
                 }
 
-            },0, 100 , TimeUnit.SECONDS);
+            },0, 10 , TimeUnit.SECONDS);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -173,10 +173,14 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
        Thread t = new Thread(() ->{
            chatRooms.forEach(chatRoom1 -> {
                if (chatRoom1.getChatRoomId().equals(chatRoom.getChatRoomId())){
-                   chatRoom1.getChatRoomMessage().add(newMsg);
+                   System.out.println("users in chat room are " + chatRoom1.getUsers());
+                   chatRoom1.getChatRoomMessage().add(newMsg);;
+                   newMsg.setUsers((chatRoom1.getUsers()));
+                   System.out.println("after assigning the new msg users are " + newMsg.getUsers());
                }
            });
        });
+
        t.setDaemon(true);
        t.start();
 
@@ -403,6 +407,18 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     }
 
     @Override
+    public boolean checkUserLoggedIn(String phonenumber_input) throws RemoteException {
+
+        for (ClientInterface client : clients) {
+            if (client.getUser().getPhoneNumber().equals(phonenumber_input)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    @Override
     public void notifyServerisDown() throws RemoteException {
         if (clients != null && clients.size() > 0){
             for (ClientInterface client : clients) {
@@ -460,7 +476,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     @Override
     public void updateStatus(Users user, UserStatus newStatus) throws RemoteException {
         DAO.updateStatus(user, newStatus);
-        mainAdminController.updateDashboard();
+        //mainAdminController.updateDashboard();
     }
 
     @Override
