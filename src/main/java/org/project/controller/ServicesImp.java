@@ -476,7 +476,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
     @Override
     public void updateStatus(Users user, UserStatus newStatus) throws RemoteException {
         DAO.updateStatus(user, newStatus);
-        mainAdminController.updateDashboard();
+        //mainAdminController.updateDashboard();
     }
 
     @Override
