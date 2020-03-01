@@ -64,7 +64,7 @@ public class ServicesImp extends UnicastRemoteObject implements ServicesInterfac
 
     public ServicesImp(MainAdminController mainAdminController) throws RemoteException {
 
-        super(1290);
+        super(1260);
         this.mainAdminController = mainAdminController;
         try {
             DAO = new UsersDAOImpl(MysqlConnection.getInstance());
