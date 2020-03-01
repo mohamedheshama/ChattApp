@@ -185,6 +185,7 @@ public class MainAdminController implements Initializable {
 
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.close();
+        System.exit(0);
     }
 
     public void draged(MouseEvent mouseEvent) {
